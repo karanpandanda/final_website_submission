@@ -1,7 +1,7 @@
 # Site settings
 baseURL = "https://karanpandanda.netlify.app"
 languageCode = "en-us"
-title = "Karan's Website"
+title = "Forty"
 theme = "forty"
 
 # Enter your tracking code to enable Google Analytics
