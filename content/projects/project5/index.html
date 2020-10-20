@@ -1,0 +1,95 @@
+---
+title: "Session 6: Homework 3"
+author: "Group 2 - Homework 3"
+date: "2020-10-20"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+
+
+<div id="imdb-ratings-differences-between-directors" class="section level1">
+<h1>IMDB ratings: Differences between directors</h1>
+<p>We explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. The confidence intervals for the mean ratings of these two directors overlap.</p>
+<p><img src="/Users/karanpandanda/Desktop/final_website_submission/images/directors.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>First, we will reproduce the graph above.</p>
+<p>In addition, we will run a hypothesis test, using use both the <code>t.test</code> command and the <code>infer</code> package to simulate from a null distribution, assuming zero difference between the two.</p>
+<pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
+glimpse(movies)</code></pre>
+<pre><code>## Rows: 2,961
+## Columns: 11
+## $ title               &lt;chr&gt; &quot;Avatar&quot;, &quot;Titanic&quot;, &quot;Jurassic World&quot;, &quot;The Aveng…
+## $ genre               &lt;chr&gt; &quot;Action&quot;, &quot;Drama&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;Action&quot;, …
+## $ director            &lt;chr&gt; &quot;James Cameron&quot;, &quot;James Cameron&quot;, &quot;Colin Trevorro…
+## $ year                &lt;dbl&gt; 2009, 1997, 2015, 2012, 2008, 1999, 1977, 2015, 2…
+## $ duration            &lt;dbl&gt; 178, 194, 124, 173, 152, 136, 125, 141, 164, 93, …
+## $ gross               &lt;dbl&gt; 7.61e+08, 6.59e+08, 6.52e+08, 6.23e+08, 5.33e+08,…
+## $ budget              &lt;dbl&gt; 2.37e+08, 2.00e+08, 1.50e+08, 2.20e+08, 1.85e+08,…
+## $ cast_facebook_likes &lt;dbl&gt; 4834, 45223, 8458, 87697, 57802, 37723, 13485, 92…
+## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, …
+## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 3…
+## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2,…</code></pre>
+<pre class="r"><code>Directors_F &lt;- movies %&gt;%
+      filter(director ==&quot;Steven Spielberg&quot;|director==&quot;Tim Burton&quot;)
+
+obs_diff_imdb &lt;- Directors_F %&gt;%
+  specify(rating ~ director) %&gt;%
+  calculate(stat = &quot;diff in means&quot;, order = c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;))
+
+null_dist_imdb &lt;- Directors_F %&gt;%
+  specify(rating ~ director) %&gt;%
+  hypothesize(null = &quot;independence&quot;) %&gt;%
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;%
+  calculate(stat = &quot;diff in means&quot;, order = c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;))
+
+null_dist_imdb %&gt;% 
+  visualize() +
+  shade_p_value(obs_stat = obs_diff_imdb, direction = &quot;two-sided&quot;)+
+  labs(title=&quot;Simulation Based Null Distribution&quot;)+
+  theme_bw()</code></pre>
+<p><img src="/projects/project5/index_files/figure-html/unnamed-chunk-1-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>null_dist_imdb %&gt;%
+  get_p_value(obs_stat = obs_diff_imdb, direction = &quot;two_sided&quot;)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   p_value
+##     &lt;dbl&gt;
+## 1       0</code></pre>
+<pre class="r"><code>null_dist_imdb  %&gt;%
+  get_confidence_interval(point_estimate = obs_diff_imdb, level = .95,type = &quot;se&quot;)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##   lower_ci upper_ci
+##      &lt;dbl&gt;    &lt;dbl&gt;
+## 1    0.149     1.14</code></pre>
+<pre class="r"><code>CI_Directors &lt;- Directors_F %&gt;%
+  group_by(director) %&gt;%
+  summarise(Mean=mean(rating), SE=sd(rating)/sqrt(n()), T.critical = qt(0.975,n()-1),Upper_CI = Mean+SE*T.critical, Lower_CI = Mean-SE*T.critical)
+
+
+ggplot(CI_Directors, aes(x=Mean, y=reorder(director, Mean)))+
+  geom_errorbar(aes(xmin=Lower_CI, xmax=Upper_CI, width=0.2, color=director, size=1.6))+
+  labs(title = &quot;Do Spielberg and Burton have the same IMDB ratings?&quot;,
+       subtitle = &quot;95% confidence intervals overlap&quot;,
+       x = &quot;Mean IMBD Rating&quot;,
+       y = &quot;&quot;) +
+  geom_point(aes(color=director, size=2))+
+  geom_rect(aes(xmin=max(Lower_CI), xmax=min(Upper_CI),ymin=-Inf, ymax=+Inf))+
+  geom_label(aes(y=reorder(director,Mean),x=Lower_CI,
+                label = round(Lower_CI,2)),
+                hjust=0.4, vjust=-0.3,
+                fill=NA, label.size = NA) +
+   geom_label(aes(y=reorder(director,Mean),x=Upper_CI,
+                   label = round(Upper_CI,2)),
+                hjust=0.4, vjust=-0.3,
+                fill=NA, label.size = NA)+
+  geom_text(aes(label=round(Mean,2),vjust=-1.5))+
+  theme_bw()+
+  theme(legend.position = &quot;null&quot;)</code></pre>
+<p><img src="/projects/project5/index_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Conclusion: the confidence intervals of the 2 groups overlap, we could think that the difference between the groups is not statistically significant. However, it does not tell the whole story. The results also shows a p value of 0.014, we can reject the null hypothesis. P value usually varies between 0 and 1, with a p value less than 0.05, in this case it is 0.014, so there is 1.4% probability the null is correct.The p value is statistically significant. Therefore, despite the overlapping, the difference between these 2 means is statistically significant.</p>
+</div>

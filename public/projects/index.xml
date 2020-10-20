@@ -36,5 +36,25 @@ In addition, many articles and commentators think that, e.g., Yield curve invers
 This may be due to the policies of real estate magnate and incumbent president Trump, but most of all, his recent Covid-19 infection and poor management of health care regulations in the country may have cost him some votes.</description>
     </item>
     
+    <item>
+      <title>Session 2: Homework 1</title>
+      <link>/projects/project6/</link>
+      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/project6/</guid>
+      <description>On your own: IBM HR Analytics For this task, you will analyse a data set on Human Resoruce Analytics. The IBM HR Analytics Employee Attrition &amp;amp; Performance data set is a fictional data set created by IBM data scientists. Among other things, the data set includes employees’ income, their distance from work, their position in the company, their level of education, etc. A full description can be found on the website.</description>
+    </item>
+    
+    <item>
+      <title>Session 6: Homework 3</title>
+      <link>/projects/project5/</link>
+      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/project5/</guid>
+      <description>IMDB ratings: Differences between directors We explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. The confidence intervals for the mean ratings of these two directors overlap.
+First, we will reproduce the graph above.
+In addition, we will run a hypothesis test, using use both the t.test command and the infer package to simulate from a null distribution, assuming zero difference between the two.</description>
+    </item>
+    
   </channel>
 </rss>

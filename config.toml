@@ -110,16 +110,16 @@ disqusShortname = ""
       url = "projects/project4"
 
     [[params.tiles.showcase]]
-      title = "Golden Jungles"
-      subtitle = "Jungles in the morning"
+      title = "Spielberg vs Burton"
+      subtitle = "Who's got the higher ratings?"
       image = "pic04.jpg"
-      url = "blogs/ipsum"
+      url = "projects/project5"
 
     [[params.tiles.showcase]]
-      title = "Cars in the Jungle"
-      subtitle = "Ipsum Dolor Sit Amet"
+      title = "IBM HR Analytics"
+      subtitle = "How do employees feel?"
       image = "pic05.jpg"
-      url = "blogs/ipsum"
+      url = "projects/project6"
 
     [[params.tiles.showcase]]
       title = "Computers in the Jungle"
