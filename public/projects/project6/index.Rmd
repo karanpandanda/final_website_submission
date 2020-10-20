@@ -1,6 +1,6 @@
 ---
-title: 'Session 2: Homework 1'
-author: "Group 2"
+title: 'IBM HR Analytics'
+author: "Karan Pandanda"
 date: "`r Sys.Date()`"
 output:
   html_document:

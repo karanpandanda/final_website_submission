@@ -8,6 +8,16 @@
     <language>en-us</language>
     <lastBuildDate>Tue, 20 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>An Analysis of AirBnBs in Athens</title>
+      <link>/projects/project7/</link>
+      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/project7/</guid>
+      <description>AirBnB analytics - Athens Introduction The data utilised in this project comes from the following source: (http://data.insideairbnb.com/greece/attica/athens/2020-06-16/data/listings.csv.gz). Through this project, we are going to explore this dataset, analyse the different variables it has and attempt to model a regression that accurately predicts the total cost of an AirBnB property in Athens, for 2 people, for 4 nights.
+  Exploratory Data Analysis Data cleaning skim(Athens_data)  (#tab:check_data)Data summary          Name  Athens_data    Number of rows  11314    Number of columns  106    _______________________     Column type frequency:     character  47    Date  5    logical  15    numeric  39    ________________________     Group variables  None     Variable type: character</description>
+    </item>
+    
+    <item>
       <title>Covid 19 Mortality</title>
       <link>/projects/project2/</link>
       <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
@@ -36,7 +46,7 @@ In addition, many articles and commentators think that, e.g., Yield curve invers
     </item>
     
     <item>
-      <title>Session 2: Homework 1</title>
+      <title>IBM HR Analytics</title>
       <link>/projects/project6/</link>
       <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
       

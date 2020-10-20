@@ -20,7 +20,7 @@ disqusShortname = ""
 
   # Provide your metadata here.
   name = "Karan Pandanda"
-  description = "Welcome to the Jungle"
+  description = "MFA student at London Business School"
 
   # Link custom assets relative to /static
   custom_css = []
@@ -38,7 +38,7 @@ disqusShortname = ""
   # Navigation Section
   [params.navigation]
     title = "Karan Pandanda"
-    subtitle = "Saviour of the Jungle"
+    subtitle = "On the Quest for Excellence"
     menu = "Menu"
     # Optional logo as brand stored in img/
     # logo = "logo.png"
@@ -104,10 +104,10 @@ disqusShortname = ""
       url = "projects/project3"
 
     [[params.tiles.showcase]]
-      title = "Yield Curve"
-      subtitle = "Does it predict a recession?"
+      title = "An Analysis of AirBnBs in Athens"
+      subtitle = "Are you planning on going to Athens anytime soon?"
       image = "pic03.jpg"
-      url = "projects/project4"
+      url = "projects/project7"
 
     [[params.tiles.showcase]]
       title = "Spielberg vs Burton"

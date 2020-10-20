@@ -1,0 +1,858 @@
+---
+title: "An Analysis of AirBnBs in Athens"
+author: "Karan Pandanda"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     
+  size="small")   
+options(digits = 3)
+
+
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+```{r load-libraries, echo=FALSE}
+library(tidyverse)
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(kableExtra)
+library(corrplot)
+library(ggfortify)
+library(huxtable)
+library(leaflet)
+library(reshape2)
+```
+
+# AirBnB analytics - Athens
+
+## Introduction 
+
+The data utilised in this project comes from the following source: (http://data.insideairbnb.com/greece/attica/athens/2020-06-16/data/listings.csv.gz). Through this project, we are going to explore this dataset, analyse the different variables it has and attempt to model a regression that accurately predicts the total cost of an AirBnB property in Athens, for 2 people, for 4 nights.  
+
+
+# Exploratory Data Analysis
+
+```{r vroom_data, echo = FALSE, cache = TRUE}
+Athens_data <- read_csv("/Users/karanpandanda/Downloads/listings.csv")%>% 
+  clean_names()
+```
+
+## Data cleaning
+
+```{r check_data}
+
+skim(Athens_data)
+```
+
+> General basic observations:
+
+* Firstly, we can observe some overall statistics through the above 'skim' function. We can see
+* Number of rows (observations): 11,314 
+* Number of columns (variables): 106 
+
+* Column type frequency: 
+** Character                47         
+** Date                     5          
+** Logical                  15         
+** Numeric                  39 
+
+As building a model to determine price for 2 people for 4 nights is the primary intended outcome of our analsysis, we want to focus our analysis specifically on a range of variables 
+
+* *price* = cost per night
+* *cleaning_fee*: cleaning fee
+* *extra_people*: charge for having more than 1 person
+* *property_type*: type of accommodation (House, Apartment, etc.)
+* *room_type*:
+** Entire home/apt (guests have entire place to themselves)
+** Private room (Guests have private room to sleep, all other rooms shared)
+** Shared room (Guests sleep in room shared with others)
+* *number_of_reviews*: Total number of reviews for the listing
+* *review_scores_rating*: Average review score (0 - 100)
+* *longitude* , latitude: geographical coordinates to help us locate the listing
+* *neighbourhood*: three variables on a few major neighbourhoods in each city
+
+> Once we have noted the above initial data, we must now prepare the data-set for the future analysis. One thing that must be noted is that there are no factor/categorical variables on this dataset. Other variables however, like property type and cancellation policy have responses presented through a limited range of options. 
+
+> To begin with, we are changing the type from string to numeric for *price*, *cleaning_fee* and *extra_people*.
+
+```{r missing_data_visual}
+
+# As not all variables are essential to the analysis, we here select potentially relevant variables to be further analyzed in the next part of the analysis.
+Athens_selected <- Athens_data %>% 
+  select(
+         host_is_superhost,
+         neighbourhood,
+         neighbourhood_cleansed,
+         latitude,
+         longitude,
+         is_location_exact,
+         property_type,
+         room_type,
+         accommodates,
+         price,
+         security_deposit,
+         cleaning_fee,
+         guests_included,
+         extra_people,
+         minimum_nights,
+         maximum_nights,
+         bedrooms,
+         number_of_reviews,
+         review_scores_rating,
+         review_scores_location,
+         review_scores_cleanliness,
+         cancellation_policy,
+        ) %>%
+  
+  mutate(price = parse_number(price),
+         cleaning_fee = parse_number(cleaning_fee),
+         extra_people = parse_number(extra_people),
+         )
+typeof(Athens_selected$price)
+typeof(Athens_selected$cleaning_fee)
+typeof(Athens_selected$extra_people)
+
+skim(Athens_selected)
+```
+
+> One thing to be noted is the number of missing values for the cleaning_fee variable, we can see 1852 missing values here. A missing value of cleaning fee could indicate either that the fee is variable based on the state of the property after the letting period, or that the place includes the cleaning fee into the overall price. 
+
+> Now, we use 'count' to identify the different categories of property-types present in the data-set and identify the top 5 in terms of frequency. 
+
+> Top 5 property types:
+
+1. Apartment: 9,677
+2. House: 386
+3. Condominium: 261
+4. Serviced apartment: 187
+5. Loft: 180	
+
+```{r, analyse the most common type of properties}
+
+ Athens_properties <- Athens_selected %>%
+    count(property_type) %>%
+    mutate(percentage = n/sum(n)*100)%>%
+  arrange(desc(n))
+
+Athens_properties <- slice(Athens_properties, -6:-n())
+
+
+total <- data.frame("Summary top 5",10691,94.49)
+names(total) <- c("property_type","n","percentage")
+
+Athens_properties.New <- rbind(Athens_properties,total)
+Athens_properties.New %>%
+
+  kbl() %>% 
+  kable_styling() %>% 
+  column_spec(1:3, color = "black") %>% 
+  kable_classic()
+
+```
+
+> As is visible above, the top 5 property types for AirBnBs in Athens account for 94.49% of the total.
+
+> We also know that AirBnB is predominantly used for travelling purposes and therefore, another variable we will explore is the number of minimum nights.
+
+```{r filter number of nights}
+Athens_nights <- Athens_selected %>%
+  
+  count(minimum_nights)%>%
+ 
+   mutate(percentage = n/sum(n)*100)%>%
+ 
+arrange(desc(n))
+
+
+Athens_nights <- slice(Athens_nights, -6:-n())
+
+Athens_nights %>%
+
+  kbl(class="table",style="red") %>% 
+  kable_styling() %>% 
+  column_spec(1:3, color = "black") %>% 
+  kable_classic()
+  
+```
+
+> The results are unsurprising. As mentioned before, AirBnB's are used predominantly for travelling purposes and hence, often for shorter lengths of stays. Hence, 1 and 2 nights are the most common options for minimum nights, with them being 43.87% and 37.46% of all the values present in the data. We believe this is because a higher minimum night number could dissuade a huge percentage of travellers as often, travellers don't stay very long in one place. Greater than 2 minimum nights cannot also be ignored, as 3 minimum nights nearly occupies 10%. The higher minimum nights could be for places that require high cleaning costs or high fixed costs everytime a new traveller enters; they put the minimum slightly higher so as to ensure profits are earned.
+
+> We now proceed to further clean the data by firstly, simplifying property type and converting it to a categorical value, then we replace the NA values in cleaning fee and security deposit with the numeric value of 0. 
+
+```{r}
+
+Athens_cleaned <- Athens_selected %>%
+
+  mutate(prop_type_simplified = case_when(
+    property_type %in% c("Apartment","Condominium", "House","Loft", "Serviced apartment") ~ property_type, 
+    TRUE ~ "Other"),
+    ) %>%
+  na_if("N/A") %>% 
+  filter(!is.na(neighbourhood)) 
+
+
+Athens_cleaned$cleaning_fee[is.na(Athens_cleaned$cleaning_fee)] <- 0
+Athens_cleaned$security_deposit[is.na(Athens_cleaned$security_deposit)] <- 0
+
+skim(Athens_cleaned)
+```
+
+
+> Generally speaking, the neighbourhood or locality of a house/apartment is a huge determinant of rent prices for that place. Therefore, it would be useful to explore the distribution of prices across neighbourhoods in Athens first, before seeing whether to include that as a variable in our regression. 
+
+```{r median_price_distr}
+
+median_price_dist <- Athens_cleaned %>% 
+  select(neighbourhood, price) %>%
+  group_by(neighbourhood) %>% 
+  summarize(median = median(price)) %>% 
+  arrange(-median)
+
+ggplot(data = median_price_dist, aes(x = reorder(neighbourhood, median), y = median)) +
+  geom_bar(stat="identity") +
+  labs(title = "AirBnB prices/ night significantly differ by neighbourhood", subtitle = "Median price per night in Athens by district", x = element_blank(), y = "Median price per night (in $)") +
+  coord_flip() +
+  theme_bw()
+```
+
+> The above chart shows us more evidence of the fact that location induces large changes in the price per night of an AirBnB property. 
+
+> In the next portion, we group the neighbourhoods into particular regions (North, North-East, South etc) in order to ensure that the number of dummy variables we'll include in our regression doesn't become too large. 
+
+> Furthermore, we will transform some variables that we believe will be useful for our analysis into factor variables. Additionally, we also perform some filtering functions to further refine the dataset. We remove outliers in both the minimum nights and the price. Firstly, we filter out any place that has a minimum night requirement of more than 4 nights. Then, we remove some price outliers as we want to filter out the possibility of inaccurate or fake listings or listings that could skew the results in one direction.
+
+```{r}
+
+Athens_cleanbase <- Athens_cleaned %>%
+  filter(minimum_nights <= 4,
+         accommodates >= 2,
+         price != 0) %>% 
+  mutate(cancellation_policy = fct_relevel(cancellation_policy,
+                                           "flexible",
+                                           "moderate",
+                                           "strict_14_with_grace_period"),
+         prop_type_simplified = fct_relevel(prop_type_simplified,
+                                          "Apartment",
+                                          "Condominium",
+                                          "House",
+                                          "Serviced apartment",
+                                          "Other"),
+         room_type = fct_relevel(room_type,
+                                 "Shared room",
+                                 "Private room",
+                                 "Entire home/apt"),
+        
+         neighbourhood_simplified = case_when(
+           # Central Athens
+           neighbourhood == "Plaka" ~ "Central Athens",
+           neighbourhood == "Monastiraki" ~ "Central Athens",
+           neighbourhood == "Kolonaki" ~ "Central Athens",
+           neighbourhood == "Psyri" ~ "Central Athens",
+           neighbourhood == "Thiseio" ~ "Central Athens",
+           neighbourhood == "Koukaki" ~ "Central Athens",
+           neighbourhood == "Kerameikos" ~ "Central Athens",
+           # East Athens
+           neighbourhood == "Ilisia" ~ "East Athens",
+            neighbourhood == "Pangrati" ~ "East Athens",
+          # North Athens
+           neighbourhood == "Neapoli" ~ "North Athens",
+          neighbourhood == "Exarcheia" ~ "North Athens",
+          neighbourhood == "Larissis" ~ "North Athens",
+          neighbourhood == "Pedion Areos" ~ "North Athens",
+          neighbourhood == "Agios Loukas" ~ "North Athens",
+          neighbourhood == "Attiki" ~ "North Athens",
+          neighbourhood == "Rizoupoli" ~ "North Athens",
+          neighbourhood == "Patisia" ~ "North Athens",
+          neighbourhood == "Kypseli" ~ "North Athens",
+          neighbourhood == "Agios Nikolaos" ~ "North Athens",
+           # North-West Athens
+           neighbourhood == "Metaxourgeio" ~ "North-West Athens",
+          neighbourhood == "Akadimia Platonos" ~ "North-West Athens",
+          neighbourhood == "Sepolia" ~ "North-West Athens",
+           # South Athens 
+           neighbourhood == "Neos Kosmos" ~ "South Athens",
+           neighbourhood == "Mets" ~ "South Athens",
+           # West Athens 
+          neighbourhood == "Votanikos" ~ "West Athens",
+          neighbourhood == "Profitis Daniil" ~ "West Athens",
+          neighbourhood == "Gazi" ~ "West Athens",
+            neighbourhood == "Petralona" ~ "West Athens",
+           neighbourhood == "Kolonos" ~ "West Athens",
+           neighbourhood == "Rouf" ~ "West Athens",
+           # Outskirts of Athens
+           neighbourhood == "Ambelokipi" ~ "Athens Outskirts",
+           neighbourhood == "Goudi" ~ "Athens Outskirts",
+           ),
+         neighbourhood_simplified = as.factor(neighbourhood_simplified),
+         price_4_nights = case_when(guests_included >= 2 ~ (price*4+cleaning_fee),
+                                    TRUE ~ ((price+extra_people)*4+cleaning_fee)),
+         price_4_nights_log = log(price_4_nights),
+         price_log = (log(price))
+         ) %>%
+  select(-neighbourhood, -property_type) %>% 
+  filter(!is.na(host_is_superhost)) %>% 
+  filter(price < 500)
+
+
+ggplot(Athens_cleanbase, aes(x=price))+geom_histogram()+theme_bw()
+skim(Athens_cleanbase)
+
+
+
+```
+
+## Further data exploration
+
+### Analysis on neighbourhoods
+
+> We're now going to look at prices for the localities we specified above (North, North-East, Central etc).
+
+```{r, fig.width = 8}
+neighbourhood <- Athens_cleanbase %>%
+  group_by(neighbourhood_simplified) %>%
+  summarise(median_p = median(price), mean_p = mean(price),
+            max_p = max(price), min_p = min(price), 
+            sd_p = sd(price), count = n()) %>% 
+  arrange(desc(mean_p)) 
+
+neighbourhood %>% 
+  kbl(col.names = c("Neighbourhood","Median Price","Mean Price", "Maximum", "Minimum", "Std. Dev","Count")) %>% 
+  kable_classic()
+```
+
+> With the data above, we can see that the trend we saw for neighbourhoods continues when we group them into localities. We see Central Athens being the most expensive in terms of mean per night stay, with a price of EUR 79.4. This is understandable, given its the city centre. This is also perhaps the reason why there are so many more properties on offer here than anywhere else, its the most profitable place to have an AirBnB as it probably gets the most demand, given its convenient location. 
+
+### Analysis on Review Score
+
+```{r, fig.width = 8}
+review_scores <- Athens_cleanbase %>%
+  select(review_scores_location, review_scores_rating, neighbourhood_simplified) %>% 
+  filter(review_scores_location != "NA") %>% 
+  filter(review_scores_rating != "NA") %>%
+  group_by(neighbourhood_simplified) %>% 
+  summarise(mean_score = mean(review_scores_rating), 
+            mean_score_location = mean(review_scores_location*10)) %>%
+  melt(id.vars = "neighbourhood_simplified") 
+review_scores$variable <- factor(review_scores$variable, labels = c("Review score of rating", "Review score of location"))
+review_scores %>% ggplot(aes(x= neighbourhood_simplified, y = value, fill = variable))+
+  geom_bar(stat="identity",position="dodge")+
+  facet_grid(~variable)+
+  scale_y_continuous(sec.axis = sec_axis(~./10, name = " "))+
+  scale_x_discrete(limits = c("North Athens", "Athens Outskirts", 
+                              "Central Athens", "East Athens", "South Athens", "West Athens", "North-West Athens"))+
+  labs(title = "Review scores are similar whilst location scores vary between areas in Athens",
+       subtitle = "Mean review scores of rating and location for each locality",
+       x = "Localities",
+       y = "Review Score")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1),legend.position = "none")
+```
+
+> What is interesting to see is that although there is a clear difference in prices between the different localities in Athens, there is no clear distinction when looking at review scores; all localities have review scores above 90. When it comes to location scores however, we see Central Athens having a higher rating than any other location, which is understandable as Central is the ideal place to be for a tourist who hopes to go visiting attractions. What is interesting to see here is that Athens Outskirts has a high rating, even though its further away from the Centre. After speaking to one of our Greek friends, we found that this is because the Outskirts of Athens are extremely beautiful, with a lot of attractions and nice houses and properties. Hence, this could be the reason behind this surprising result. 
+
+### Analysis on Property types
+
+> We also want to expand upon our analysis by looking deeper into the property type, to understand whether there is a pattern we can see between property type and price. 
+
+```{r, fig.width = 8}
+Athens_cleanbase %>% 
+  select(prop_type_simplified, price) %>%
+  ggplot(aes(x = factor(prop_type_simplified), y = price), colour = prop_type_simplified)+
+  geom_boxplot(width=0.10, fill = "red", outlier.shape = NA)+ 
+  stat_summary(fun=median, geom="point", size=3, color="black")+
+  labs(title = "Other properties have the highest median price whist apartments have the lowest",
+       subtitle = "Distribution of prices for each property type",
+       x = "Property Type",
+       y = "Price")+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+> What we can see here is that 'Other' property types have the highest median price, which is interesting as it gives us an idea that properties listed under 'Other' are probably higher-end and more unique, as they don't fall into one of the other buckets, which drives their price up. Interestingly, apartment, condominium and house all seem to have the same price point, which is a surprising result. Serviced apartment seems to have a higher price point, the reason perhaps being that cleaning/organising services are included in serviced apartments when compared to regular apartments. 
+
+### Analysis on Room Type
+
+> Another variable we believe will influence the price is the room type. We want to see the relationship between type of room and the price that is paid. 
+
+Which room type has the highest price?
+
+```{r, fig.width = 8}
+Athens_cleanbase %>% 
+  select(room_type, price) %>%
+  ggplot(aes(x = factor(room_type), y = price), colour = room_type)+
+  geom_boxplot(width=0.10, fill = "blue", outlier.shape = NA)+ 
+  stat_summary(fun=median, geom="point", size=2, color="black")+
+  labs(title = "Hotel rooms have the highest median price",
+       subtitle = "Distribution of prices for each room type",
+       x = "Room Type",
+       y = "Price")+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+
+> This graph shows some interesting standardized results; we see shared room being the cheapest and private room being less than the entire home/apartment. However, it is surprising to see how much more the median hotel room price is compared to any other type of room; we believe this is because there are many more homes/apartments on offer in AirBnb Athens as compared to hotels; more competition means that the property owners have to drive down prices. 
+
+> Given that different room types have different price points because they accommodate different numbers of people, we will refine the above graph to include a price point per person, to see if any surprising results show up.  
+
+```{r, fig.width = 8}
+Athens_cleanbase %>% 
+  select(room_type, price, accommodates) %>%
+  ggplot(aes(x = factor(room_type), y = price/accommodates), colour = room_type)+
+  geom_boxplot(width=0.10, fill = "green", outlier.shape = NA)+ 
+  stat_summary(fun=median, geom="point", size=3, color="black")+
+  labs(title = "Hotel rooms are still the most expensive",
+       subtitle = "Entire home/apt has a lower per person price point than private room",
+       x = "Room Type",
+       y = "Price Per Person")+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+
+> Here, the results are as expected; we see that shared rooms are the cheapest per person, whilst private rooms are slightly more expensive per person than having an entire home/apartment. 
+
+## Correlations
+
+> In this section, we will look at correlations between our variables of interest. 
+
+```{r basic_correlations}
+
+Athens_corr <- Athens_cleanbase %>% 
+  select(price, 
+         price_4_nights,
+         price_4_nights_log,
+         accommodates, 
+         cleaning_fee, 
+         guests_included, 
+         extra_people, 
+         number_of_reviews, 
+         review_scores_rating,
+         review_scores_cleanliness,
+         review_scores_location,
+         )
+  
+skim((Athens_corr))
+```
+
+
+```{r, fig.width = 10}
+cormat <- round(cor(Athens_corr %>% select(-price_4_nights_log), use = "pairwise.complete.obs"),2)
+melted_cormat <- melt(cormat)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + 
+  labs(title = "Correlation Heatmap", x = "", y = "", fill = "Corr. Coeff.") +
+  scale_fill_gradient(low = "yellow", high = "red") +
+  theme(axis.text.x = element_text(angle = 90),
+        axis.text = element_text(size=8)) 
+```
+
+> The results of this heatmap open up some things we have to consider when building our models later. Firstly, we see a relatively high correlation between the variables 'review_score_rating', 'review_score_cleanliness' and 'review_score_location'. This means including all 3 in the regressions later will lead to biased estimates so that is something we need to note. Furthremore, we see a degree of correlation between the number of people a property accommodates and the price of that property. Although this is something to be noted, it may not lead to biased causal estimates in our regression as the level of correlation isn't too high. We will double check this further in our regression section. 
+
+# AirBnB Map in Athens
+
+```{r}
+coloured_price <- colorBin(palette = c("darkgreen", "yellow", "red3"), Athens_cleanbase$price, bins = c(0,20,40,60,80,100,200,300,500))
+leaflet(Athens_cleanbase) %>%
+  addTiles(options = providerTileOptions(minZoom = 8)) %>%
+   setView(lng = mean(Athens_cleanbase$longitude),
+           lat = mean(Athens_cleanbase$latitude), 
+           zoom = 12) %>%
+  addCircleMarkers(
+                   lng = ~longitude,
+                   lat = ~latitude,
+                   radius = 1,
+                   #colour by price
+                   color = ~coloured_price(price),
+                   fillOpacity = 0.5,
+                   popup = ~price,
+                   popupOptions = popupOptions(maxWidth = 30),
+                   label =  ~paste(room_type,"|",
+                            "Price: ", price)) %>%
+  addLegend("bottomright", pal = coloured_price, values = ~price,
+    title = "AirBnB Prices",
+    labFormat = labelFormat(prefix = "€"),
+    opacity = 1)
+```
+
+> This map shows us that most AirBnB properties are very densely clustered in and around the central region of Athens. We see relatively more red dots in the middle of the cluster, further indicating to us that Central Athens has a relativley higher price point for AirBnB's than other parts of Athens. Furthermore, there is more of a yellow hue in the dots in the South as compared to the North, which further confirms the results we saw before. Hence, we can say that this map adds further robustness to the evidence we collected earlier. 
+
+# Regression Model
+
+> The goal of our analysis is to build a model that can accurately predict the price for 2 people to stay at an AirBnB in Athens for 4 nights. In order to do this, we will run a sequence of regressions and test to see which explanatory variables from our data-set best determine the price for 4 nights. We hope to see a model that has the following characteristics: 
+
+* A relatively high R-squared value
+* Estimators that are statistically significant and non-collinear
+* Observations are independent of each other
+* The dependent variable is normally distributed for any fixed value of 'x'
+* Homoscedasticity in the residual for any value of X
+
+
+
+> First, we check if the distribution of 'price_4_nights is normally distributed. 
+
+```{r}
+
+ggplot(Athens_cleanbase,aes(x=price_4_nights)) + geom_histogram() + theme_bw() + xlim(0,500) + labs(title="The distribution of the price for 4 nights is slightly right skewed", subtitle= "Distribution of the price for 4 nights", x="Price for four nights", y="Count")
+
+
+
+```
+
+> We notice that the distribution of price_4_nights is slightly skewed to the right, indicating that using this variable as the dependent one could lead to heteroskedasticity of the residuals, which is a big issue. We could potentialy improve this result by using a log scale, so we now test to see what the distribution is of the dependent variable when it is logged. 
+
+```{r}
+
+Athens_cleanbase <- Athens_cleanbase %>%
+  filter(price_4_nights!=0)
+ggplot(Athens_cleanbase,aes(x=price_4_nights_log)) + geom_histogram() + theme_bw() + labs(title="The distribution of log(price_4_nights) is normally distributed", subtitle="Distribution of log(price_4_nights)",x="log(price_4_nights)", y="count")
+
+```
+> This distribution of *price_4_nights_log* is more in line with a normal distribution. Furthermore, given that price_4_nights has a very large range of values, and the logged version of this variable has a much smaller range of values and scale, analysis on the logged version will be more convincing. Hence, we will use *price_4_nights_log* as the dependent variable going forward.
+
+> First, we run a basic model just looking at the effects of property type, # of reviews and rating scores on price for 4 nights, to give ourselves a starting point.
+
+```{r}
+model1 <- lm(price_4_nights_log ~ prop_type_simplified+ number_of_reviews + review_scores_rating, data=Athens_cleanbase)
+    msummary(model1)
+    car::vif(model1)
+    autoplot(model1) + theme_bw()
+huxtable::huxreg(model1)
+
+```
+
+> This model has some minor issues and quite a few positive signs: 
+
+* Not all of the explanatory variables are statistically significant
+* The R-squared value is very low (0.034), which indicates that the model needs more explanatory power
+* Residuals seem to follow a normal distribution 
+* There are only a few points with high leverage
+* The VIF value is not large enough to indicate presence of collinearity
+* Variance of the residuals is pretty much constant
+* We can proceed to interpret the coefficients for this particular model now, except for that of Condominium as it isn't statistically significant:
+
+> When interpreting the coefficients, since we used log(price_4_nights), we will have to use the exponential function to take into account the log factor. 
+
+```{r}
+
+house_vs_apart <- (exp(0.181)-1)*100
+house_vs_apart
+
+serviced_vs_apart <- (exp(0.153)-1)*100
+serviced_vs_apart
+
+other_vs_apart <- (exp( 0.278)-1)*100
+other_vs_apart
+
+loft_vs_apart <- (exp(0.236)-1)*100
+loft_vs_apart
+
+number_reviews <- (exp(-0.001)-1)*100
+number_reviews
+
+score_rating <- (exp(0.008)-1)*100
+score_rating
+```
+
+
+> Interpreting these coefficients:
+
+* The 'price for 4 nights' is approximately 19.8% more expensive for a house compared to an apartment.
+* The 'price for 4 nights' is approximately 16.5% more expensive for a serviced apartment compared to an apartment.
+* The 'price for 4 nights' is approximately 32% more expensive for other accommodation compared to an apartment.
+* The 'price for 4 nights' is approximately 26.6% more expensive for a loft compared to an apartment.
+* The 'price for 4 nights' is approximately 0.1% less expensive for each additional review.
+* The 'price for 4 nights' is approximately 0.803% more expensive for each additional rating score.
+
+
+> Now, we are going to test to see if the type of room has an influence on price. We expect that it will as we saw in our previous analysis section. 
+
+
+```{r}
+
+model2 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + review_scores_rating + room_type, data=Athens_cleanbase)
+car::vif(model2)
+huxtable::huxreg(model1,model2)
+
+
+
+```
+
+> This model has a higher adjusted R squared of (0.094), and everyone of the coefficients are stastically significant at atleast the 1% level. (Except Condominium, which is only significant at the 5% level)
+
+> We can now proceed to interpret the new coefficients. 
+
+```{r}
+
+condominium_vs_apart <- (exp(0.096)-1)*100
+condominium_vs_apart
+
+house_vs_apart <- (exp(0.263)-1)*100
+house_vs_apart
+
+serviced_vs_apart <- (exp(0.216)-1)*100
+serviced_vs_apart
+
+other_vs_apart <- (exp( 0.489)-1)*100
+other_vs_apart
+
+loft_vs_apart <- (exp(0.219)-1)*100
+loft_vs_apart
+
+number_reviews <- (exp(-0.001)-1)*100
+number_reviews
+
+score_rating <- (exp(0.007)-1)*100
+score_rating
+
+roomprivate_vs_shared <- (exp(0.410)-1) *100
+roomprivate_vs_shared
+
+roomentire_vs_shared <- (exp(0.932)-1) *100
+roomentire_vs_shared
+
+roomhotel_vs_shared <- (exp(0.856)-1)*100
+roomhotel_vs_shared
+```
+
+>According to this new model: 
+
+* The 'price for 4 nights' is approximately 10.1% more expensive for a condominium compared to an apartment.
+* The 'price for 4 nights' is approximately 30.1% more expensive for a house compared to an apartment.
+* The 'price for 4 nights' is approximately 24.1% more expensive for a serviced apartment compared to an apartment.
+* The 'price for 4 nights' is approximately 63.1% more expensive for other accommodation compared to an apartment.
+* The 'price for 4 nights' is approximately 24.5% more expensive for a loft compared to an apartment.
+* The 'price for 4 nights' is approximately 0.1% less expensive for each additional review.
+* The 'price for 4 nights' is approximately 0.702% more expensive for each additional rating score.
+* The 'price for 4 nights' is approximately 50.7% more expensive for a private room compared to a shared room. 
+* The 'price for 4 nights' is approximately 154% more expensive for an entire house/apartment compared to a shared room. * The 'price for 4 nights' is approximately 135% more expensive for a hotel room compared to a share room. 
+
+> None of these coefficients are extremely surprising, the results align with what one would expect. We now need to go further into our models to figure out why we are lacking in explanatory power and where we can improve this factor. The number of accommodates that are permitted in the property should ideally cause differences in the price of the property, hence, we will include this in our 3rd model to see if it has an impact on price.  
+
+```{r}
+model3 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + review_scores_rating + room_type+accommodates,
+             data=Athens_cleanbase)
+huxtable::huxreg(model1,model2, model3)
+autoplot(model3) + theme_bw()
+car::vif(model3)
+```
+
+
+> The first thing we can note is that this model has a significantly higher explanatory power than any previous models (with an R-squared of 0.313.) Furthermore, all coefficients are significant again and we dont have any issues with collinearity, as we can see with the VIFs.
+
+```{r}
+accommodates_interpretation <- (exp(0.125)-1)*100
+accommodates_interpretation
+```
+
+> According to this new model: 
+
+* The 'price for 4 nights' is approximately 13.3% more expensive for each additional accommodate allowed in the property. 
+
+
+> As discussed in our reasoning before, location is often a big determinant of price, as we have all seen from our personal experiences when travelling. Therefore, we now include 'neighbourhood_simplified' into our regression to see whether or not this does impact the 'price for 4 nights.'
+
+```{r}
+
+model4 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + 
+               review_scores_rating + room_type+accommodates + neighbourhood_simplified,
+             data=Athens_cleanbase)
+
+msummary(model4)
+car::vif(model4)
+autoplot(model4) + theme_bw()
+huxtable::huxreg(model4)
+
+
+```
+
+> When accounting for location in our model by adding the 'neighbourhood_simplified' dummy variables, we again see an increase in our R-squared value, with it now being at 0.424. This is a marked improvement from our first model, which only explained around 3% of the variability in our dependent variable. Additionally, we do not suffer from any endogeneity issues through collinearity as evidenced in the VIF scores again in this model. We will interpret all coefficients when we arrive at our final model.
+
+
+> We now proceed with some intuitions from our previous data exploration. Remember seeing that there isn't much difference in review rating scores for the different localities but there is a difference in the review for location. Therefore, we experiment by adding the 'review_scores_location' variable. Additionally, we predict that the numbers of bedrooms that a place has will explain further variation in the price for 4 nights. Therefore, we proceed with a new model that includes these two variables. 
+
+```{r}
+
+model5 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + 
+               review_scores_rating + room_type+ accommodates + neighbourhood_simplified + review_scores_location + bedrooms, data=Athens_cleanbase)
+huxtable::huxreg(model4,model5)
+```
+> As expected, we see that the bedrooms variable adds to the predictive power of our model (the R-squared is now 0.446) and is significant at the 0.1% level. However, surprisingly, the review_scores_location variable isn't significant, even at the 5% level. In our correlation analysis, we saw that this variable was highly correlated with the review_scores_rating variable and hence, this could be a contributing factor to the surprising result we see for the coefficient on this variable. 
+
+> We now test whether or not the a cost for extra people has an impact on price overall. We expect that it will as often, stricter rules on extra people can be found in more expensive properties and areas as there may be issues with regards to noise and fixed costs with regards to extra people.
+
+```{r}
+
+model6 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + 
+               review_scores_rating + room_type+ accommodates + neighbourhood_simplified + bedrooms + extra_people,
+             data=Athens_cleanbase)
+huxtable::huxreg(model4,model5, model6)
+```
+> As expected, we see that extra people adds to the predictive power of our model (the R-squared is now 0.468) and is significant at the 0.1% level. Therefore, we will incorporate extra_people into our model going forward. As discussed before, we will interpret all coefficients again when we have finalised our model. 
+
+> We are now going to look at adding 3 other variables from our initial dataset to see if they can add an impact to our model above. The ones we will add are listed alongside: 'cancellation_policy,' 'review_scores_cleanliness' and  'is_location_exact'.
+
+
+```{r}
+
+model7 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + 
+               review_scores_rating + room_type+ accommodates + neighbourhood_simplified + extra_people + bedrooms + cancellation_policy + review_scores_cleanliness + is_location_exact ,
+             data=Athens_cleanbase)
+
+huxtable::huxreg(model6, model7)
+
+msummary(model6)
+car::vif(model6)
+autoplot(model6) + theme_bw()
+```
+
+> The addition of these 3 intuitive variables leads to a very marginal increase in the R-squared of our model. We considered whether adding these new variables would be worthwhile but after seeing the low addition it offers to the R-squared value, we have decided against including it in our model. Furthermore, these extra variables make the model more complex and the low rise in R-squared doesn't justify their inclusion.
+
+> Therefore, till now, the best model has been Model 6. It has an R-squared of 0.468, which is high enough to allow us to analyse the coefficients, the VIFs indicate there is no presence of collinearity and most of the explanatory variables in the model are significant at the 0.1% level. When looking at some limitations of this model, we must note that the residuals aren't perfectly normally distributed and there are some data points with high leverage, which may contribute to an element of bias in our estimates. 
+
+> Below, we present the results of running our final model along with the interpretations of the significant coefficients:
+
+> Final Model results 
+
+```{r}
+
+model6 <- lm(price_4_nights_log ~ prop_type_simplified + number_of_reviews + 
+               review_scores_rating + room_type+ accommodates + neighbourhood_simplified + extra_people + bedrooms,
+             data=Athens_cleanbase)
+
+msummary(model6)
+car::vif(model6)
+autoplot(model6) + theme_bw()
+huxtable::huxreg(model6)
+
+```
+
+> Interpretations of significant coefficients
+
+```{r}
+
+condominium_vs_apart <- (exp(0.058)-1)*100
+condominium_vs_apart
+
+house_vs_apart <- (exp(0.067)-1)*100
+house_vs_apart
+
+other_vs_apart <- (exp( 0.375)-1)*100
+other_vs_apart
+
+loft_vs_apart <- (exp(0.225)-1)*100
+loft_vs_apart
+
+number_reviews <- (exp(-0.001)-1)*100
+number_reviews
+
+score_rating <- (exp(0.005)-1)*100
+score_rating
+
+roomprivate_vs_shared <- (exp(0.493)-1) *100
+roomprivate_vs_shared
+
+roomentire_vs_shared <- (exp(0.779)-1) *100
+roomentire_vs_shared
+
+roomhotel_vs_shared <- (exp(0.870)-1)*100
+roomhotel_vs_shared
+
+accommodates_interpretation <- (exp(0.062)-1)*100
+accommodates_interpretation
+
+central_vs_outskirts <- (exp(0.337)-1)*100
+central_vs_outskirts
+
+east_vs_outskirts <- (exp(0.077)-1)*100
+east_vs_outskirts
+
+north_vs_outskirts <- (exp(-0.086)-1)*100
+north_vs_outskirts
+
+nw_vs_outskirts <- (exp(0.073)-1)*100
+nw_vs_outskirts 
+
+south_vs_outskirts <- (exp(0.134)-1)*100
+south_vs_outskirts
+
+extra_people_interpretation <- (exp(0.011)-1)*100
+extra_people_interpretation
+
+bedrooms_interpretation <- (exp(0.141)-1)*100
+bedrooms_interpretation
+```
+
+> According to our model: 
+
+* The 'price for 4 nights' is approximately 5.97% more expensive for a condominium compared to an apartment.
+* The 'price for 4 nights' is approximately 6.93% more expensive for a house compared to an apartment.
+* The 'price for 4 nights' is approximately 45.5% more expensive for other accommodation compared to an apartment.
+* The 'price for 4 nights' is approximately 25.2% more expensive for a loft compared to an apartment.
+* The 'price for 4 nights' is approximately 0.1% less expensive for each additional review.
+* The 'price for 4 nights' is approximately 0.501% more expensive for each additional rating score.
+* The 'price for 4 nights' is approximately 63.7% more expensive for a private room compared to a shared room. 
+* The 'price for 4 nights' is approximately 118% more expensive for an entire house/apartment compared to a shared room. * The 'price for 4 nights' is approximately 139% more expensive for a hotel room compared to a share room. 
+* The 'price for 4 nights' is approximately 6.4% more expensive everytime the capacity of a house increases by 1.
+* The 'price for 4 nights' is approximately 40.1% more expensive for a central Athens location compared to the outskirts of Athens. 
+* The 'price for 4 nights' is approximately 8% more expensive for an east Athens location compared to the outskirts of Athens.
+* The 'price for 4 nights' is approximately 8.24% less expensive for a North  location compared to the outskirts of Athens.
+* The 'price for 4 nights' is approximately 7.57% more expensive for a North-West location compared to the outskirts of Athens.
+* The 'price for 4 nights' is approximately 14.3% more expensive for a South location compared to the outskirts of Athens.
+* The 'price for 4 nights' is approximately 1.11% more expensive everytime an extra person is added. 
+* The 'price for 4 nights' is approximately 15.1% more expensive everytime an there is an increase of 1 bedroom in a property.
+
+
+# Price prediction 
+
+> We now move to the final stage of our analysis; predicting the price for 4 nights, for 2 people, for an AirBnB property in Athens. We do this using model 6 as specified above. Firstly, we filter the dataset according to the guidelines mentioned in the project requirements (apartment, private room, atleast 10 reviews and atleast a 90):
+
+```{r airbnb_target}
+
+
+airbnb_finalprice <- Athens_cleanbase %>% 
+  filter(prop_type_simplified == "Apartment",
+         room_type == "Private room",
+         number_of_reviews >= 10,
+         review_scores_rating >= 90)
+
+
+predicted_price_4_nights <- predict(model6, newdata = airbnb_finalprice, interval = "confidence") %>% 
+  exp() %>% 
+  data.frame() %>%
+  summarize(lower_bound = mean(lwr),
+            predicted_price = mean(fit),
+            upper_bound = mean(upr))
+  
+predicted_price_4_nights %>%
+  kbl(col.names = c("Lower Bound (€)", "Predicted Price (€)", "Upper Bound (€)"), format.args = list(big.mark = ",")) %>%
+  kable_classic()
+```
+
+> Therefore, to conclude, we can see that by running our preferred model (Model 6), we can come up with an estimate for the price for 4 nights, given the conditions we specified above. We also calcualte the 95% confidence interval around this price. The results show that the predicted price for an apartment AirBnb in Athens, with a private room, for 4 nights, is €127, with a lower bound and upper bound of €122 and €133 respectively. 
+
+# Details and Resources
+* Many thanks to Karan's friend Fay Metaxa for bestowing us with her in-depth knowledge of neighbourhoods in Athens!
