@@ -92,16 +92,16 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "1 River"
-      subtitle = "Many blue rivers surround jungles"
+      title = "Covid-19 update"
+      subtitle = "Why is it so scary"
       image = "pic01.jpg"
-      url = "projects/project1"
+      url = ""
 
     [[params.tiles.showcase]]
       title = "Purple Skies"
       subtitle = "Beautiful Nights around Jungles"
       image = "pic02.jpg"
-      url = "blogs/tempus"
+      url = "projects/project1"
 
     [[params.tiles.showcase]]
       title = "Jungles on Fire"
