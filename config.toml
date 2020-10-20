@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "Covid-19 update"
       subtitle = "Why is it so scary"
       image = "pic01.jpg"
-      url = ""
+      url = "blogs/blog1.md"
 
     [[params.tiles.showcase]]
       title = "Purple Skies"
