@@ -92,10 +92,10 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Covid-19 update"
+      title = "Covid-19 Mortality"
       subtitle = "Why is it so scary"
-      image = "pic01.jpg"
-      url = "blogs/blog1"
+      image = "Covid19.jpg"
+      url = "projects/project2"
 
     [[params.tiles.showcase]]
       title = "Purple Skies"

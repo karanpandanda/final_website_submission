@@ -1,6 +1,6 @@
 ---
-title: "Covid 19 Update"
-author: "Your name goes here"
+title: "Covid 19 Mortality"
+author: "Karan Pandanda"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -60,7 +60,7 @@ img
 
 ## Analysis of mortality rates based on several input variables  
 
-The rampant Covid-19 virus has mankind firmly in its grip. And even though many have gotten used to this state of helplessness in the meantime, that was quite different in the beginning. Especially the months of March and April were characterized by panic and uncertainty. It was said to be a killer virus - a mixture of misinformation and sheer ignorance. So it seems more important than ever to rely on facts and observe the situation in a neutral light. How deadly is the virus in reality? How does this mortality rate vary depending on the age and sex of the patients? This will be examined in the following paragraphs through the detailed analysis of a COvid-19 data set.
+On this page, we are going to look in more detail at the deadliness of Covid-19. The rampant Covid-19 virus has mankind firmly in its grip. And even though many have gotten used to this state of helplessness in the meantime, that was quite different in the beginning. Especially the months of March and April were characterized by panic and uncertainty. It was said to be a killer virus - a mixture of misinformation and sheer ignorance. So it seems more important than ever to rely on facts and observe the situation in a neutral light. How deadly is the virus in reality? How does this mortality rate vary depending on the age and sex of the patients? This will be examined in the following paragraphs through the detailed analysis of a Covid-19 data set.
 
 Specifically, we want to see the death rate of patients by gender and sex and whether they had co-morbidities or not, besides whether the patients were admitted to the Intensive Care Unit (ICU) or not.
 
