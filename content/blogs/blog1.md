@@ -11,6 +11,6 @@ slug: blog1
 title: Curriculum Vitae
 ---
 
-Hire me!
+Don't miss out on an excellent hiring opportunity!
 
 ![Resume](/img/CV.jpg)

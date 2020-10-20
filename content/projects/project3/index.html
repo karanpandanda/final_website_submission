@@ -19,9 +19,8 @@ output:
 <p><img src="/projects/project3/index_files/figure-html/unnamed-chunk-2-1.png" width="3500" style="display: block; margin: auto;" /></p>
 <div id="my-forecast-of-what-is-coming" class="section level2">
 <h2>My forecast of what is coming!</h2>
-<p>The race is on. Four years after Trump’s historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls.</p>
-<p>This may be due to the policies of real estate magnate and incumbent president Trump, but most of all, his recent Covid-19 infection and poor management of health care regulations in the country may have cost him some votes. Just one more reason to look at the real facts. How does the population see the president, is it time for him to go or will he rise from the ashes like the phoenix and defend the office on Tuesday November 3rd? We are doing this with the help offivethirtyeight.com, that has detailed data on all polls that track the president’s approval. Find more about it <a href="https://projects.fivethirtyeight.com/trump-approval-ratings/">here</a>.</p>
-<p>To give more information on Trump and the support he gets, I will calculate the average net approval rate (approve- disapprove) for each week since he got into office. Besides, I will analyze this anlong its 95% confidence interval later on.</p>
+<p>America is in a state of political, economic and social turmoil. And the election still hasn’t happened yet! This page looks at Donald Trump’s approval amongst his voters and how it has changed since Biden has become the confirmed Democratic candidate. Biden is ahead in the polls as of today so are we in for a new President? The race is on. Four years after Trump’s historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls. If you want some more in-depth analysis, you can find some more data <a href="https://projects.fivethirtyeight.com/trump-approval-ratings/">here</a>.</p>
+<p>In the graph below, we can see the progression of Trump’s net approval across every single week in his presidency. The results might surprise you!</p>
 <pre class="r"><code>approval_data &lt;- approval_polllist %&gt;% 
   #filter(subgroup==&quot;All polls&quot;, tracking==&quot;TRUE&quot;) %&gt;% 
   mutate(year = year(mdy(enddate)), week = week(mdy(enddate)),     
@@ -50,7 +49,7 @@ data_summary %&gt;%
   geom_hline(aes(yintercept=0), color=&quot;orange&quot;)+
   theme(aspect.ratio=0.5)</code></pre>
 <p><img src="/projects/project3/index_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p>Looking at the graph, it paints a clear picture of Trump’s approval rates in the US. While the average net approval was still higher at the beginning of 2017, it rapidly decreased in the months and weeks following. While this could have a variety of different reasons, this development is most certainly triggered by his politics such as the trade war with China, a rather unconventional presentation at the G20 summit among others.While the rates hardly changed in 2019 compared to the year before, one can see broad fluctuations in values, even of up to 5%. This year, certainly around week 37-39 his popularity rose again. One explanation could be the increasing campaigning, besides that this change could also be triggered by the fact that elections are approaching and fluctuations probably increase even more throughout this time.</p>
+<p>Trump hasn’t had a positive net approval since he entered office in early 2017! How much of a reflection is this on the current state of the USA? What are the reasons behind this; besides his boisterous attitude, his non-presidential like demeanour and his general body-language? Trump has had a very up &amp; down presidency, as can be seen by the numerous up and down shifts in each of the four graphs above; is this the sign of a good president and leader? Personally, I think Trump has a knack for coming across as a champion of the downtrodden, but I don’t think that necessarily translates into good leadership abilities.</p>
 <p>Next we want to compare the confidence intervals.</p>
 <pre class="r"><code>data_summary %&gt;% 
   filter(year==2020,week %in% c(15,34)) %&gt;% 
@@ -153,5 +152,5 @@ upper_CI
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>Given the data shown above, paired with the fact that Biden leads polls by roughly +10% as of October 15th 2020, it seems that Trump’s days in office are counted. While this is not only due to his individual politics and agenda, Biden’s program, which focuses on social welfare, a better health care system and renewable energies, is probably more in line with the modern lifestyle.I believe that the latter will win the election. And yet, past times have taught us that anything is possible - it remains exciting and we will all have to be patient for a few more weeks.</p>
+<p>So what is the data above telling us? It is telling us that Trump’s days in office are numbered as people have steadily reduced their confidence in his ability to lead the country. This is potentially because Biden has a more moderate approach to politics than Trump and after 4 years of the Donald, I think everyone has had enough!</p>
 </div>
