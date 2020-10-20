@@ -93,15 +93,15 @@ disqusShortname = ""
     
     [[params.tiles.showcase]]
       title = "Covid-19 Mortality"
-      subtitle = "Why is it so scary"
+      subtitle = "Why is everyone so scared?"
       image = "Covid19.jpg"
       url = "projects/project2"
 
     [[params.tiles.showcase]]
-      title = "Purple Skies"
-      subtitle = "Beautiful Nights around Jungles"
+      title = "Trump vs Biden"
+      subtitle = "What is the outcome going to be"
       image = "pic02.jpg"
-      url = "projects/project2"
+      url = "projects/project3"
 
     [[params.tiles.showcase]]
       title = "Jungles on Fire"

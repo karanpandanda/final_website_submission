@@ -1,0 +1,129 @@
+---
+title: "Donald Trump's Approval Rating"
+author: "Karan Pandanda"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+library(png)
+library(kableExtra)
+library(knitr)  
+library(ggplot2)  
+library(magick)
+```
+
+```{r, include=FALSE}
+img <- image_read("/Users/karanpandanda/Downloads/TrumpvsBiden.jpg")
+img <- image_scale(image_scale(img,"500%"),("x100%"))
+```
+
+```{r, echo=FALSE}
+img
+```
+
+## A personal forecast of the upcoming US election
+
+The race is on. Four years after Trump's historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls.
+
+This may be due to the policies of real estate magnate and incumbent president Trump, but most of all, his recent Covid-19 infection and poor management of health care regulations in the country may have cost him some votes. Just one more reason to look at the real facts. How does the population see the president, is it time for him to go or will he rise from the ashes like the phoenix and defend the office on Tuesday November 3rd? We are doing this with the help offivethirtyeight.com, that has detailed data on all polls that track the president's approval. Find more about it [here](https://projects.fivethirtyeight.com/trump-approval-ratings/).
+
+```{r, cache=TRUE, echo=FALSE,include=FALSE}
+# Import approval polls data
+# approval_polllist <- read_csv(here::here('data', 'approval_polllist.csv'))
+
+# or directly off fivethirtyeight website
+approval_polllist <- read_csv('https://projects.fivethirtyeight.com/trump-approval-data/approval_polllist.csv') 
+
+glimpse(approval_polllist)
+
+# Use `lubridate` to fix dates, as they are given as characters.
+```
+
+To give more information on Trump and the support he gets, I will calculate the average net approval rate (approve- disapprove) for each week since he got into office. Besides, I will analyze this anlong its 95% confidence interval later on.
+
+```{r}
+approval_data <- approval_polllist %>% 
+  #filter(subgroup=="All polls", tracking=="TRUE") %>% 
+  mutate(year = year(mdy(enddate)), week = week(mdy(enddate)),     
+          net_approval=(approve-disapprove)) 
+
+data_summary <- approval_data %>%  
+  group_by(year, week) %>% 
+  summarise(count = n(), avg_net_approval=mean(net_approval),sd=sd(net_approval),
+            se=sd/sqrt(count), 
+            t_critical=qt(0.975,count-1), 
+            lower_CI=avg_net_approval-t_critical*se, upper_CI=avg_net_approval+t_critical*se)
+
+data_summary %>% 
+  ggplot(aes(x=week, y=avg_net_approval,color=factor(year),fill=factor(year)))+
+  geom_point()+geom_line()+ geom_hline(yintercept=0, color = "orange")+ 
+  facet_wrap(~year)+
+  geom_ribbon(aes(ymin=lower_CI, ymax=upper_CI), alpha=0.1)+
+  #change to theme_bw() to have white background + black frame around plot
+  theme_bw()+theme(plot.title = element_text(face="bold")) +
+  labs (title = "Does America really approve of Trump?",
+      subtitle = "Average Weekly Net Approval Margins of polls",
+    y = "Average Net Approval(%)",
+    x = "Week of the year"
+  )  + scale_x_continuous(breaks = seq(0,52,by= 13))+scale_y_continuous(breaks = seq(-20,7.5,by= 2.5))+
+  guides(fill=F, color=F)+
+  geom_hline(aes(yintercept=0), color="orange")+
+  theme(aspect.ratio=0.5)
+```
+
+Looking at the graph, it paints a clear picture of Trump's approval rates in the US. While the average net approval was still higher at the beginning of 2017, it rapidly decreased in the months and weeks following. While this could have a variety of different reasons, this development is most certainly triggered by his politics such as the trade war with China, a rather unconventional presentation at the G20 summit among others.While the rates hardly changed in 2019 compared to the year before, one can see broad fluctuations in values, even of up to 5%. This year, certainly around week 37-39 his popularity rose again. One explanation could be the increasing campaigning, besides that this change could also be triggered by the fact that elections are approaching and fluctuations probably increase even more throughout this time.
+```{r trump_margins, echo=FALSE, out.width="100%",include=FALSE}
+knitr::include_graphics(here::here("images", "trump_approval_margin.png"), error = FALSE)
+```
+
+Next we want to compare the confidence intervals.
+
+```{r compare_two_weeks,warnings= FALSE, message=FALSE}
+data_summary %>% 
+  filter(year==2020,week %in% c(15,34)) %>% 
+  kable() %>% 
+  kable_styling()
+
+```
+From the two-row table above, we can clearly see that the Trump’s net approval rate has fallen approximately 4 percents to -11.5% within 19 weeks and its corresponding confidence intervals widened, too. It indicates voters were becoming more wavering and many of them transferred to Biden, especially after the Democratic National Convention held in 18 August.
+
+## Conclusion
+
+Given the data shown above, paired with the fact that Biden leads polls by roughly +10% as of October 15th 2020, it seems that Trump's days in office are counted. While this is not only due to his individual politics and agenda, Biden's program, which focuses on social welfare, a better health care system and renewable energies, is probably more in line with the modern lifestyle.I believe that the latter will win the election. And yet, past times have taught us that anything is possible - it remains exciting and we will all have to be patient for a few more weeks.
+
