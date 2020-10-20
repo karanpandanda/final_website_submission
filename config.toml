@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "1 River"
       subtitle = "Many blue rivers surround jungles"
       image = "pic01.jpg"
-      url = "blogs/aliquam"
+      url = "projects/project1"
 
     [[params.tiles.showcase]]
       title = "Purple Skies"
