@@ -209,7 +209,7 @@ disqusShortname = ""
 
     [[params.footer.social]]
       icon = "fa-instagram"
-      url= "hhttps://www.instagram.com/karanpandanda/"
+      url= "https://www.instagram.com/karanpandanda/"
       label = "Instagram"
     
     [[params.footer.social]]
