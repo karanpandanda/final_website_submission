@@ -83,9 +83,7 @@
                             
 
 
-<div id="on-your-own-ibm-hr-analytics" class="section level1">
-<h1>On your own: IBM HR Analytics</h1>
-<p>For this task, you will analyse a data set on Human Resoruce Analytics. The <a href="https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset">IBM HR Analytics Employee Attrition &amp; Performance data set</a> is a fictional data set created by IBM data scientists. Among other things, the data set includes employees’ income, their distance from work, their position in the company, their level of education, etc. A full description can be found on the website.</p>
+<p>This page looks at analysing a dataset from IBM, to understand and explore some of the statistics present and gain some inferences through this. We proceed by cleaning the data, ensuring effective analysis. Subsequently, we will make note of the interesting results we see from the data!</p>
 <p>First let us load the data</p>
 <pre class="r"><code>hr_dataset &lt;- read_csv(here::here(&quot;data&quot;, &quot;datasets_1067_1925_WA_Fn-UseC_-HR-Employee-Attrition.csv&quot;))
 glimpse(hr_dataset)</code></pre>
@@ -181,8 +179,8 @@ print(frequency)</code></pre>
 <pre><code>## [1] 0.192</code></pre>
 <pre class="r"><code>ggplot(hr_cleaned, aes(attrition)) + geom_bar() + labs(title = &quot;Employee Attrition&quot;,                          subtitle = &quot;Count of Yes or No for attrition&quot;, x = &quot;Attrition&quot;, y = &quot;Count&quot;) +
       theme_bw()+geom_text(stat = &#39;count&#39;,aes(label =..count.., vjust = -0.2))</code></pre>
-<p><img src="/projects/project6/index_files/figure-html/attrition-1.png" width="648" style="display: block; margin: auto;" />
-# This bar graph below depicts the number of people who have left the company before due to attrition, which is the natural process of the workforce dwindling in a company. The data here shows that there are 19.22% of people who have experienced attrition. This can be expected from a company with the size and stability of IBM.</p>
+<p><img src="/projects/project6/index_files/figure-html/attrition-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>This bar graph below depicts the number of people who have left the company before due to attrition, which is the natural process of the workforce dwindling in a company. The data here shows that there are 19.22% of people who have experienced attrition. This can be expected from a company with the size and stability of IBM.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>How are <code>age</code>, <code>years_at_company</code>, <code>monthly_income</code> and <code>years_since_last_promotion</code> distributed? can you roughly guess which of these variables is closer to Normal just by looking at summary statistics?</li>
 </ol>
@@ -213,8 +211,8 @@ print(frequency)</code></pre>
           x = &quot;Years since last promotion distribution&quot;,
           y = &quot;Density&quot;) +
           theme_bw() </code></pre>
-<p><img src="/projects/project6/index_files/figure-html/four_variables_distribution-4.png" width="648" style="display: block; margin: auto;" />
-# We can begin with age. Age is roughly normally distributed, with the highest percentage of people in the company being around 25-45 years old. The youngest people in the company are around 18-19 years old whilst the oldest are 60, which indicates that the company has a retirement policy when an employee reaches a certain age. With regards to ‘years at company’, there is an obvious skew to the left, with most people having been there for between 0 and 10 years, which makes sense given the relatively young workforce at the firm. Very few people have been at the company for more than 30 years. Similarly, in the monthly income distribution, there is a skew to the left as well, with a majority of people earning a monthly income of between 2000 and 8000, which aligns with the data we have seen in the previous distributions. The highest salary paid per month is 20000. Lastly, with regards to ‘years since last promotion,’ we can again a leftward skew, with an exponential decline in density of people as ‘years since last promotion’ increases. This is potentially as promotions are more common in entry-level and other lower-level jobs, which fits the age, experience and monthly income range of the workforce. The distribution most similar to normal is ‘age,’ which is understandable as it is a naturally occurring variable (like height or weight), and these tend to be normally distributed.</p>
+<p><img src="/projects/project6/index_files/figure-html/four_variables_distribution-4.png" width="648" style="display: block; margin: auto;" /></p>
+<p>We can begin with age. Age is roughly normally distributed, with the highest percentage of people in the company being around 25-45 years old. The youngest people in the company are around 18-19 years old whilst the oldest are 60, which indicates that the company has a retirement policy when an employee reaches a certain age. With regards to ‘years at company’, there is an obvious skew to the left, with most people having been there for between 0 and 10 years, which makes sense given the relatively young workforce at the firm. Very few people have been at the company for more than 30 years. Similarly, in the monthly income distribution, there is a skew to the left as well, with a majority of people earning a monthly income of between 2000 and 8000, which aligns with the data we have seen in the previous distributions. The highest salary paid per month is 20000. Lastly, with regards to ‘years since last promotion,’ we can again a leftward skew, with an exponential decline in density of people as ‘years since last promotion’ increases. This is potentially as promotions are more common in entry-level and other lower-level jobs, which fits the age, experience and monthly income range of the workforce. The distribution most similar to normal is ‘age,’ which is understandable as it is a naturally occurring variable (like height or weight), and these tend to be normally distributed.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>How are <code>job_satisfaction</code> and <code>work_life_balance</code> distributed? Don’t just report counts, but express categories as % of total</li>
 </ol>
@@ -245,11 +243,9 @@ ggplot(hr_cleaned, aes(work_life_balance,  label = scales::percent(prop.table(st
                          x = &quot;Work-life balance&quot;,
                          y = &quot;Count&quot;) +
                     theme_bw()</code></pre>
-<p><img src="/projects/project6/index_files/figure-html/distribution%20of%20job_satisfaction%20and%20work_life_balance-2.png" width="648" style="display: block; margin: auto;" />
-# There is a trend of relatively high job satisfaction in this company, with 61.29% of people reporting either a ‘High’ or ‘Very High’ level of satisfaction with their job. There is a 0.61% higher incidence of ‘Low’ job satisfaction than ‘Medium’ satisfaction, which is a factor that needs to be taken into account.</p>
-</div>
-<div id="the-most-common-response-to-the-nature-of-work-life-balance-is-better-with-60.7-of-respondents-believing-that-their-work-life-balance-classifies-in-this-category.-the-two-extremes-low-and-best-have-5.4-and-10.4-respectively-which-is-another-good-sign-for-the-firm." class="section level1">
-<h1>The most common response to the nature of work-life balance is ‘Better,’ with 60.7% of respondents believing that their work life balance classifies in this category. The two extremes, ‘Low’ and ‘Best’ have 5.4% and 10.4% respectively, which is another good sign for the firm.</h1>
+<p><img src="/projects/project6/index_files/figure-html/distribution%20of%20job_satisfaction%20and%20work_life_balance-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>There is a trend of relatively high job satisfaction in this company, with 61.29% of people reporting either a ‘High’ or ‘Very High’ level of satisfaction with their job. There is a 0.61% higher incidence of ‘Low’ job satisfaction than ‘Medium’ satisfaction, which is a factor that needs to be taken into account.</p>
+<p>The most common response to the nature of work-life balance is ‘Better,’ with 60.7% of respondents believing that their work life balance classifies in this category. The two extremes, ‘Low’ and ‘Best’ have 5.4% and 10.4% respectively, which is another good sign for the firm.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>Is there any relationship between monthly income and education? Monthly income and gender?</li>
 </ol>
@@ -268,11 +264,9 @@ ggplot(hr_cleaned, aes(x = education, y = monthly_income)) +
          x = &quot;Gender&quot;,
          y = &quot;Monthly Income&quot;) +
      theme_bw()</code></pre>
-<p><img src="/projects/project6/index_files/figure-html/relationship_between_monthly_income_and_education-2.png" width="648" style="display: block; margin: auto;" />
-# The boxplot between Monthly Income and education shows that there is a general increase in the median monthly income as the level of education increases. There are many more outliers in Masters than in any other education level, potentially due to the wider array of roles available to people with that qualification, and surprisingly, no outliers at all amongst the ‘Doctor’ level of education. This could be due to the fact that outliers here earn more than 20000 per month and aren’t depicted in the graph.</p>
-</div>
-<div id="there-is-an-interesting-relationship-between-monthly-income-and-gender.-there-is-a-higher-median-monthly-income-for-females-as-compared-to-males-however-there-are-far-more-upper-outliers-for-males-as-compared-to-females.-this-indicates-more-men-are-paid-a-high-monthly-income-than-women-whereas-the-inter-quartile-range-of-womens-median-monthly-income-is-higher-than-that-of-men." class="section level1">
-<h1>There is an interesting relationship between monthly income and gender. There is a higher median monthly income for females as compared to males, however, there are far more upper outliers for males as compared to females. This indicates more men are paid a high monthly income than women, whereas the inter-quartile range of women’s median monthly income is higher than that of men.</h1>
+<p><img src="/projects/project6/index_files/figure-html/relationship_between_monthly_income_and_education-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>The boxplot between Monthly Income and education shows that there is a general increase in the median monthly income as the level of education increases. There are many more outliers in Masters than in any other education level, potentially due to the wider array of roles available to people with that qualification, and surprisingly, no outliers at all amongst the ‘Doctor’ level of education. This could be due to the fact that outliers here earn more than 20000 per month and aren’t depicted in the graph.</p>
+<p>There is an interesting relationship between monthly income and gender. There is a higher median monthly income for females as compared to males, however, there are far more upper outliers for males as compared to females. This indicates more men are paid a high monthly income than women, whereas the inter-quartile range of women’s median monthly income is higher than that of men.</p>
 <ol start="5" style="list-style-type: decimal">
 <li>Plot a boxplot of income vs job role. Make sure the highest-paid job roles appear first</li>
 </ol>
@@ -283,9 +277,7 @@ ggplot(hr_cleaned, aes(x = education, y = monthly_income)) +
          x = &quot;Monthly Income&quot;) +
      theme_bw() </code></pre>
 <p><img src="/projects/project6/index_files/figure-html/boxplot_of_income_VS_job_role-1.png" width="648" style="display: block; margin: auto;" /></p>
-</div>
-<div id="the-boxplot-below-shows-the-relationship-between-monthly-income-and-job-roles-within-the-company-arranged-in-descending-order-of-monthly-income.-understandably-managers-are-paid-the-highest-median-monthly-income-of-around-17500-with-research-directors-not-far-behind-at-approximately-17000.-there-is-then-a-large-gap-in-median-incomes-between-research-directors-and-healthcare-representatives-with-the-latter-being-paid-a-median-monthly-income-of-7000.-manufacturing-directors-and-sales-executives-have-similar-median-monthly-incomes-as-healthcare-representatives-but-the-latter-has-the-highest-interquartile-range.-finally-hr-research-scientists-lab-technicians-and-sales-representatives-all-have-median-monthly-incomes-of-between-2500-and-3000-but-employees-in-hr-have-the-widest-range-of-salaries-and-the-highest-iqr-too." class="section level1">
-<h1>The boxplot below shows the relationship between monthly income and job roles within the company, arranged in descending order of monthly income. Understandably, managers are paid the highest median monthly income of around 17500, with research directors not far behind at approximately 17000. There is then a large gap in median incomes between Research Directors and Healthcare Representatives, with the latter being paid a median monthly income of 7000. Manufacturing directors and sales executives have similar median monthly incomes as healthcare representatives, but the latter has the highest interquartile range. Finally, HR, Research scientists, lab technicians and sales representatives all have median monthly incomes of between 2500 and 3000, but employees in HR have the widest range of salaries and the highest IQR too.</h1>
+<p>The boxplot below shows the relationship between monthly income and job roles within the company, arranged in descending order of monthly income. Understandably, managers are paid the highest median monthly income of around 17500, with research directors not far behind at approximately 17000. There is then a large gap in median incomes between Research Directors and Healthcare Representatives, with the latter being paid a median monthly income of 7000. Manufacturing directors and sales executives have similar median monthly incomes as healthcare representatives, but the latter has the highest interquartile range. Finally, HR, Research scientists, lab technicians and sales representatives all have median monthly incomes of between 2500 and 3000, but employees in HR have the widest range of salaries and the highest IQR too.</p>
 <ol start="6" style="list-style-type: decimal">
 <li>Calculate and plot a bar chart of the mean (or median?) income by education level.</li>
 </ol>
@@ -300,8 +292,8 @@ ggplot(by_education, aes(x = education, y =median_income)) +
          y = &quot;Median Monthly Income&quot;) +
      geom_text(aes(label=median_income), vjust=-0.5)+
      theme_bw() </code></pre>
-<p><img src="/projects/project6/index_files/figure-html/mean_income_by_education_level-1.png" width="648" style="display: block; margin: auto;" />
-# As observed before, there is a positive relationship between median monthly income and education level, with higher education levels earning more on average than the ones before. However, there is a slight anomaly as bachelors earn a lower median monthly income than college graduates. A potential explanation for this could be due to what we saw before with research scientists being paid the same median monthly income as lab technicians. Scientists will need a minimum of a bachelors degree whereas technicians can be college graduates as well.</p>
+<p><img src="/projects/project6/index_files/figure-html/mean_income_by_education_level-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>As observed before, there is a positive relationship between median monthly income and education level, with higher education levels earning more on average than the ones before. However, there is a slight anomaly as bachelors earn a lower median monthly income than college graduates. A potential explanation for this could be due to what we saw before with research scientists being paid the same median monthly income as lab technicians. Scientists will need a minimum of a bachelors degree whereas technicians can be college graduates as well.</p>
 <ol start="7" style="list-style-type: decimal">
 <li>Plot the distribution of income by education level. Use a facet_wrap and a theme from <code>ggthemes</code></li>
 </ol>
@@ -313,9 +305,7 @@ ggplot(by_education, aes(x = education, y =median_income)) +
          y = &quot; Density&quot;) +
      theme_bw() </code></pre>
 <p><img src="/projects/project6/index_files/figure-html/distribution%20of%20income%20by%20education%20level-1.png" width="648" style="display: block; margin: auto;" /></p>
-</div>
-<div id="below-we-see-the-distributions-of-income-separated-by-education-levels.-below-college-college-bachelor-and-master-all-have-relatively-pronounced-left-skewed-distributions-with-a-majority-of-employees-earning-between-2000-and-10000-in-each-of-these-4-education-levels.-however-there-is-a-big-difference-for-those-with-a-doctorate-we-see-a-low-density-across-the-ranges-0-20000-this-indicates-there-is-a-different-median-income-level-that-doctors-earn-that-isnt-depicted-on-the-range-0-20000." class="section level1">
-<h1>Below we see the distributions of income separated by education levels. ‘Below College,’ ‘College,’ ‘Bachelor,’ and ‘Master’ all have relatively pronounced left-skewed distributions, with a majority of employees earning between 2000 and 10000 in each of these 4 education levels. However, there is a big difference for those with a doctorate, we see a low density across the ranges 0-20000, this indicates there is a different median income level that doctors earn that isn’t depicted on the range 0-20000.</h1>
+<p>Below we see the distributions of income separated by education levels. ‘Below College,’ ‘College,’ ‘Bachelor,’ and ‘Master’ all have relatively pronounced left-skewed distributions, with a majority of employees earning between 2000 and 10000 in each of these 4 education levels. However, there is a big difference for those with a doctorate, we see a low density across the ranges 0-20000, this indicates there is a different median income level that doctors earn that isn’t depicted on the range 0-20000.</p>
 <ol start="8" style="list-style-type: decimal">
 <li>Plot income vs age, faceted by <code>job_role</code></li>
 </ol>
@@ -326,23 +316,8 @@ ggplot(by_education, aes(x = education, y =median_income)) +
          x = &quot;Monthly Income&quot;,
          y = &quot;Age&quot;) +
      theme_bw() </code></pre>
-<p><img src="/projects/project6/index_files/figure-html/income%20vs%20age-1.png" width="648" style="display: block; margin: auto;" />
-# Here we have documented the relationship between age and income, categorizing each scatter plot by job role. Here we see statistics that reinforce the data we’ve observed in previous graphs, however, there are some new statistics we can observe as well. For example, here we can see that there are no managers below the age of 30, nor are there any sales representatives above the age of 55.</p>
-</div>
-<div id="details" class="section level1">
-<h1>Details</h1>
-<ul>
-<li>Who did you collaborate with: Tommaso Manara, Frederic Von Abercron, Karan Pandanda, Kisen Wang, Xiaotong Liang, Julia Jin</li>
-<li>Approximately how much time did you spend on this problem set: 15 hours</li>
-<li>What, if anything, gave you the most trouble: Challenge 1 and 2</li>
-</ul>
-</div>
-<div id="rubric" class="section level1">
-<h1>Rubric</h1>
-<p>Check minus (1/5): Displays minimal effort. Doesn’t complete all components. Code is poorly written and not documented. Uses the same type of plot for each graph, or doesn’t use plots appropriate for the variables being analyzed.</p>
-<p>Check (3/5): Solid effort. Hits all the elements. No clear mistakes. Easy to follow (both the code and the output).</p>
-<p>Check plus (5/5): Finished all components of the assignment correctly and addressed both challenges. Code is well-documented (both self-documented and with additional comments as necessary). Used tidyverse, instead of base R. Graphs and tables are properly labelled. Analysis is clear and easy to follow, either because graphs are labeled clearly or you’ve written additional text to describe how you interpret the output.</p>
-</div>
+<p><img src="/projects/project6/index_files/figure-html/income%20vs%20age-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Here we have documented the relationship between age and income, categorizing each scatter plot by job role. Here we see statistics that reinforce the data we’ve observed in previous graphs, however, there are some new statistics we can observe as well. For example, here we can see that there are no managers below the age of 30, nor are there any sales representatives above the age of 55.</p>
 
                         </div>
                     </section>

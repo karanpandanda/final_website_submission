@@ -1,6 +1,6 @@
 ---
-title: "Session 6: Homework 3"
-author: "Group 2 - Homework 3"
+title: "Spielberg vs Burton"
+author: "Karan Pandanda"
 date: "2020-10-20"
 output:
   html_document:
@@ -14,12 +14,7 @@ output:
 
 
 
-<div id="imdb-ratings-differences-between-directors" class="section level1">
-<h1>IMDB ratings: Differences between directors</h1>
-<p>We explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. The confidence intervals for the mean ratings of these two directors overlap.</p>
-<p><img src="/Users/karanpandanda/Desktop/final_website_submission/images/directors.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>First, we will reproduce the graph above.</p>
-<p>In addition, we will run a hypothesis test, using use both the <code>t.test</code> command and the <code>infer</code> package to simulate from a null distribution, assuming zero difference between the two.</p>
+<p>In this page, we want to explore whether or not the mean IMBD rating for Steven Spielberg is the same as Tim Burton’s. We explore this through hypothesis testing and data analysis.</p>
 <pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
 glimpse(movies)</code></pre>
 <pre><code>## Rows: 2,961
@@ -59,13 +54,13 @@ null_dist_imdb %&gt;%
 <pre><code>## # A tibble: 1 x 1
 ##   p_value
 ##     &lt;dbl&gt;
-## 1       0</code></pre>
+## 1   0.006</code></pre>
 <pre class="r"><code>null_dist_imdb  %&gt;%
   get_confidence_interval(point_estimate = obs_diff_imdb, level = .95,type = &quot;se&quot;)</code></pre>
 <pre><code>## # A tibble: 1 x 2
 ##   lower_ci upper_ci
 ##      &lt;dbl&gt;    &lt;dbl&gt;
-## 1    0.149     1.14</code></pre>
+## 1    0.162     1.12</code></pre>
 <pre class="r"><code>CI_Directors &lt;- Directors_F %&gt;%
   group_by(director) %&gt;%
   summarise(Mean=mean(rating), SE=sd(rating)/sqrt(n()), T.critical = qt(0.975,n()-1),Upper_CI = Mean+SE*T.critical, Lower_CI = Mean-SE*T.critical)
@@ -91,5 +86,4 @@ ggplot(CI_Directors, aes(x=Mean, y=reorder(director, Mean)))+
   theme_bw()+
   theme(legend.position = &quot;null&quot;)</code></pre>
 <p><img src="/projects/project5/index_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p>Conclusion: the confidence intervals of the 2 groups overlap, we could think that the difference between the groups is not statistically significant. However, it does not tell the whole story. The results also shows a p value of 0.014, we can reject the null hypothesis. P value usually varies between 0 and 1, with a p value less than 0.05, in this case it is 0.014, so there is 1.4% probability the null is correct.The p value is statistically significant. Therefore, despite the overlapping, the difference between these 2 means is statistically significant.</p>
-</div>
+<p>Conclusion: Given that the confidence intervals of the 2 means overlap slightly, we could think that the difference between the means is not statistically significant. However, this is misleading as we must look at the p-value in our hypothesis test. The results show a p value of 0.014, and hence, we can reject the null hypothesis that the means are equal. Therefore, the difference between the 2 means is statistically significant and the two directors do not have the same average ratings.</p>

@@ -1,6 +1,6 @@
 ---
-title: "Session 6: Homework 3"
-author: "Group 2 - Homework 3"
+title: "Spielberg vs Burton"
+author: "Karan Pandanda"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -46,19 +46,8 @@ library(openintro)
 library(tidyquant)
 ```
 
-# IMDB ratings: Differences between directors
+In this page, we want to explore whether or not the mean IMBD rating for Steven Spielberg is the same as Tim Burton's. We explore this through hypothesis testing and data analysis.
 
-We explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. The confidence intervals for the mean ratings of these two directors overlap. 
-
-
-```{r directors, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "directors.png"), error = FALSE)
-```
-
-
-First, we will reproduce the graph above.
-
-In addition, we will run a hypothesis test, using use both the `t.test` command and the `infer` package to simulate from a null distribution, assuming zero difference between the two.
 
 ```{r load-movies-data}
 movies <- read_csv(here::here("data", "movies.csv"))
@@ -134,4 +123,4 @@ ggplot(CI_Directors, aes(x=Mean, y=reorder(director, Mean)))+
 
 ```
 
-Conclusion: the confidence intervals of the 2 groups overlap, we could think that the difference between the groups is not statistically significant. However, it does not tell the whole story. The results also shows a p value of 0.014, we can reject the null hypothesis. P value usually varies between 0 and 1, with a p value less than 0.05, in this case it is 0.014, so there is 1.4% probability the null is correct.The p value is statistically significant. Therefore, despite the overlapping, the difference between these 2 means is statistically significant.
+Conclusion: Given that the confidence intervals of the 2 means overlap slightly, we could think that the difference between the means is not statistically significant. However, this is misleading as we must look at the p-value in our hypothesis test. The results show a p value of 0.014, and hence, we can reject the null hypothesis that the means are equal. Therefore, the difference between the 2 means is statistically significant and the two directors do not have the same average ratings. 
