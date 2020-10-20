@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="Welcome to the Jungle">
+	<meta name="author" content="Karan Pandanda">
+	<meta name="generator" content="Hugo 0.75.1" />
+	<title>Covid 19 Update &middot; Forty</title>
+	<!-- Stylesheets -->
+	
+	<link rel="stylesheet" href="/css/main.css"/>
+	
+	
+
+	
+
+	<!-- Custom Fonts -->
+	<link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+	
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="js/ie/html5shiv.js"></script>
+	<script src="js/ie/html5shiv.jsrespond.min.js"></script>
+	<![endif]-->
+</head>
+
+    <body>
+
+    <!-- Wrapper -->
+        <div id="wrapper">
+
+            <!-- Header -->
+    <header id="header" class="alt">
+        <a href="/" class="logo"><strong>Karan Pandanda</strong> <span>Saviour of the Jungle</span></a>
+        <nav>
+            <a href="#menu">Menu</a>
+        </nav>
+    </header>
+
+<!-- Menu -->
+    <nav id="menu">
+        <ul class="links">
+            
+                <li><a href="/">Home</a></li>
+            
+                <li><a href="/blogs">The Big Jungle</a></li>
+            
+                <li><a href="/blogs/ipsum">A Small Jungle</a></li>
+            
+                <li><a href="/elements.html">Coorg&#39;s Jungles</a></li>
+            
+
+        </ul>
+        <ul class="actions vertical">
+            
+                <li><a href="/blogs" class="button special fit">Understand the Jungles</a></li>
+            
+            
+                <li><a href="/" class="button fit">Log In</a></li>
+            
+        </ul>
+    </nav>
+
+        <!-- Main -->
+            <div id="main" class="alt">
+
+                
+                    <section id="one">
+                        <div class="inner">
+                            <header class="major">
+                                <h1>Covid 19 Update</h1>
+                            </header>
+                            
+                            
+
+
+<p><img src="/projects/project2/index_files/figure-html/unnamed-chunk-2-1.png" width="4750" style="display: block; margin: auto;" /></p>
+<div id="analysis-of-mortality-rates-based-on-several-input-variables" class="section level2">
+<h2>Analysis of mortality rates based on several input variables</h2>
+<p>The rampant Covid-19 virus has mankind firmly in its grip. And even though many have gotten used to this state of helplessness in the meantime, that was quite different in the beginning. Especially the months of March and April were characterized by panic and uncertainty. It was said to be a killer virus - a mixture of misinformation and sheer ignorance. So it seems more important than ever to rely on facts and observe the situation in a neutral light. How deadly is the virus in reality? How does this mortality rate vary depending on the age and sex of the patients? This will be examined in the following paragraphs through the detailed analysis of a COvid-19 data set.</p>
+<p>Specifically, we want to see the death rate of patients by gender and sex and whether they had co-morbidities or not, besides whether the patients were admitted to the Intensive Care Unit (ICU) or not.</p>
+<pre class="r"><code># file contains 11 variables and 3.66m rows and is well over 380Mb. 
+# It will take time to download
+
+# URL link to CDC to download data
+url &lt;- &quot;https://data.cdc.gov/api/views/vbim-akqf/rows.csv?accessType=DOWNLOAD&quot;
+
+covid_data &lt;- read_csv(url)%&gt;% # If vroom::vroom(url) doesn&#39;t work, use read_csv(url)
+  clean_names()
+
+cleaned_data &lt;- covid_data %&gt;% 
+  filter(death_yn %in% c(&quot;Yes&quot;, &quot;No&quot;)) %&gt;% #to remove non-meaningful value in death_yn.
+  filter(medcond_yn %in% c(&quot;Yes&quot;,&quot;No&quot;) &amp; icu_yn %in% c(&quot;Yes&quot;, &quot;No&quot;)) %&gt;% #to remove non-meaningful value in medcond_yn and icu_yn.
+  filter(age_group!=&quot;Unknown&quot;) %&gt;%  #to remove non-meaningful value in age_group.
+  filter(sex %in% c(&quot;Male&quot;,&quot;Female&quot;)) %&gt;% 
+    mutate(
+    medcond_yn=case_when(
+      medcond_yn==&quot;Yes&quot; ~ &quot;With comorbidities&quot;,
+      medcond_yn==&quot;No&quot; ~ &quot;Without comorbidities&quot;
+    ),
+    icu_yn=case_when(
+    icu_yn==&quot;Yes&quot; ~ &quot;Admitted to ICU&quot;,
+    icu_yn==&quot;No&quot; ~ &quot;No ICU&quot;
+    ))</code></pre>
+<p>We start with the first graph that has a look at death rates by gender, sex and whether the patient had co-morbidities or not. See below:</p>
+<pre class="r"><code>cleaned_data %&gt;% 
+  group_by(sex, medcond_yn, age_group) %&gt;% 
+  summarise(death_num = count(death_yn==&quot;Yes&quot;), total_num =n(), death_rate = death_num/n()) %&gt;% 
+  
+  ggplot(aes(x=death_rate,y=reorder(age_group, death_rate)))+
+    geom_col(fill=&quot;#003366&quot;)+
+    theme_bw() +
+    labs (title = &quot;Covid death % by age group, sex and with or without co-morbidities&quot;, x=&quot;&quot;, y=&quot;&quot;) +
+    geom_text(aes(label=round(death_rate*100,1)), hjust=-0.1, size=3)+ #ajust size, position, and decimal for barlabels.
+    facet_grid(medcond_yn ~ sex)+ #get the 2x2 combined plot, vertical medcond_yn and horizontal sex.
+    scale_x_continuous(limits=c(0,0.85),breaks=seq(0,0.8,0.2),label=scales::percent)+ #make all labels in the plot and  axis label percent.
+    theme(plot.margin = unit(c(0.1,0.1,0.1,0.1),&quot;cm&quot;))</code></pre>
+<p><img src="/projects/project2/index_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>As the graph shows, there are fundamental differences that need to be addressed. First of all, we can we (something we know from the media already), that the mortality varies by age. While people between the ages of 0-29 are hardly affected by Covid-19, it seems to be really dangerous fo the 80+ generation. Even without co-morbidities, c. 25% of women and c. 31% of men died. A shocking result. Besides just focusing on the rates itself, this difference between men and women is also interesting. While there could be multiple other reasons, one explanation for the gap is, that women tend to have a stronger immune system than men and also get significantly older. The Coid-19 virus might therefore not affect them as much as the male population of the same age. It would require a more intensive research on the dataset to come to state a valid assumption though.</p>
+<p>Secondly, we can really see the effect of co-morbidities on the overall death rate, as shown in the charts in the first row. While the mortality rate of women increases by c. 18% with this additional variable compared to no co-morbidities, it almost doubles for the men in the group of 80+ years. This horrific scenario really shows the severity of the virus and is per se an important reason why all of us should support the new hygiene regulations, especially in countries struggling like the UK.</p>
+<p>Lastly we want to see if the fact that patients had to be treated in the intensive care unit had an impact on the death rate.</p>
+<pre class="r"><code>cleaned_data %&gt;% 
+  group_by(sex, icu_yn, age_group) %&gt;% 
+  summarise(death_num = count(death_yn==&quot;Yes&quot;), total_num =n(), death_rate = death_num/n()) %&gt;% 
+  
+  ggplot(aes(x=death_rate,y=reorder(age_group, death_rate)))+
+    geom_col(fill=&quot;#FF9999&quot;)+
+    theme_bw() +
+    labs (title = &quot;Covid death % by age group, sex and whether patient was admitted to ICU&quot;, x=&quot;&quot;, y=&quot;&quot;) +
+    geom_text(aes(label=round(death_rate*100,1)), hjust=-0.1, size=3)+
+    facet_grid(icu_yn ~ sex)+ #get the 2x2 combined plot, vertical icu_yn and horizontal sex.
+    scale_x_continuous(limits=c(0,0.85),breaks=seq(0,0.8,0.2),label=scales::percent)+
+    theme(plot.margin = unit(c(0.1,0.1,0.1,0.1),&quot;cm&quot;))</code></pre>
+<p><img src="/projects/project2/index_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>This new input variable, the ICU, shows how severe the situation really is in the hospitals. Even among the 30-39 year old’s 36.3% of males and 23.8% of females sent to intensive care die from the virus. As opposed to the graph before, here we can see that Covid-19 really has an impact on all age groups and one should be really worried if a relative gets sent to ICU because of a Covid-19 infection. For males and females above 80, the data is truly horrific and just c. 20% of those sent to ICU, survive.</p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>Overall, the analysis of the data set shows shocking results.Not only does the pure existence of co-morbidities significantly increase the Covid-19 risks for patients, in particular among the age groups 70-79 and 80+, but especially for males in higher ages the chances of dying from an infection almost double to over 50%. Besides that,the numbers considering patients on the intensive care station really show how severe the situation must have been there throughout the months of March and April. This finding was very well reflected in the situation Italy found itself in in during this time frame. Due to an overload of hospitals and intensive care beds, people of advanced age were turned away at the doors and sent home to die. A terrible scenario, which we and all European countries will hopefully be spared from in the coming months.</p>
+</div>
+
+                        </div>
+                    </section>
+            <!-- Disqus Inject -->
+                
+            </div>
+            
+        <!-- Footer -->
+            
+                <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="icons">
+                
+                    <li><a href="https://www.facebook.com/karan.dravid.16/" class="icon alt fa-facebook" target="_blank"><span class="label">Facebook</span></a></li>
+                
+                    <li><a href="#ZgotmplZ" class="icon alt fa-instagram" target="_blank"><span class="label">Instagram</span></a></li>
+                
+                    <li><a href="https://github.com/karanpandanda1" class="icon alt fa-github" target="_blank"><span class="label">GitHub</span></a></li>
+                
+                    <li><a href="https://www.linkedin.com/in/karan-pandanda-a7b9231b1/" class="icon alt fa-linkedin" target="_blank"><span class="label">LinkedIn</span></a></li>
+                
+            </ul>
+            <ul class="copyright">
+                <li>&copy; KarolersInc.</li>
+                
+            </ul>
+        </div>
+    </footer>
+
+            
+        </div>
+
+    <!-- Scripts -->
+        <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.scrolly.min.js"></script>
+    <script src="/js/jquery.scrollex.min.js"></script>
+    <script src="/js/skel.min.js"></script>
+    <script src="/js/util.js"></script>
+
+    
+
+    <!-- Main JS -->
+    <script src="/js/main.js"></script>
+
+    
+
+    
+
+    </body>
+</html>
