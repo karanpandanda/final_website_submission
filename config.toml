@@ -104,10 +104,10 @@ disqusShortname = ""
       url = "projects/project3"
 
     [[params.tiles.showcase]]
-      title = "Jungles on Fire"
-      subtitle = "Raging through Life"
+      title = "Yield Curve"
+      subtitle = "Does it predict a recession?"
       image = "pic03.jpg"
-      url = "blogs/magna"
+      url = "projects/project4"
 
     [[params.tiles.showcase]]
       title = "Golden Jungles"
