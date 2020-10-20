@@ -127,7 +127,7 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "IBM HR Analytics"
       subtitle = "How do employees feel?"
-      image = "IBM.jpg"
+      image = "IBM.png"
       url = "projects/project6"
 
     [[params.tiles.showcase]]
@@ -148,10 +148,10 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "My Role-Model"
-    subtitle = """Why I aspire to be like him. 
-    Rahul Dravid, an Indian cricketing legend, is my idol. He has taught me ."""
-    buttonText = "Get Started"
-    url = "blogs"
+    subtitle = """Why do I aspire to be like him.? 
+    Rahul Dravid, an Indian cricketing legend, is my idol. I grew up watching this man marshall the entire Indian team, being an anchor in times of need. He taught me the importance of dedication, perseverance and being a gentleman."""
+    buttonText = "Find out more about him"
+    url = "https://en.wikipedia.org/wiki/Rahul_Dravid"
 
 
   # Contact section
