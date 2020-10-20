@@ -44,21 +44,30 @@ disqusShortname = ""
     # logo = "logo.png"
 
     [[params.navigation.links]]
-      name = "Home"
-      url = "#"
+      name = "My CV"
+      url = "blogs/blog1"
 
     [[params.navigation.links]]
-      name = "The Big Jungle"
-      url = "blogs"
+      name = "Covid-19 Mortality"
+      url = "projects/project2"
 
     [[params.navigation.links]]
-      name = "A Small Jungle"
-      url = "blogs/ipsum"
+      name = "Trump vs Biden"
+      url = "projects/project3"
 
     [[params.navigation.links]]
-      name = "Coorg's Jungles"
-      url = "elements.html"
+      name = "An Analysis of AirBnBs in Athens"
+      url = "projects/project7"
 
+[[params.navigation.links]]
+       name = "Spielberg vs Burton"
+       url = "projects/project5"
+       
+    [[params.navigation.links]]
+       name = "IBM HR Analytics"
+       url = "projects/project6"
+       
+       
     # Add custom links here by uncommenting code below. To remove links just delete
     # the [[params.navigation.links]] map associated with that link. Copy and paste
     # code below if you need more links. Buttons work in the same way.
@@ -68,8 +77,8 @@ disqusShortname = ""
 
     # Button Style 1
     [[params.navigation.button1]]
-      name = "Understand the Jungles"
-      url = "blogs"
+      name = "Getting to know my achievements"
+      url = "blogs/blog1"
 
     # Button Style 2
     [[params.navigation.button2]]
@@ -82,8 +91,8 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Karan"
-    subtitle = "AND WELCOME TO THE JUNGLE"
-    buttonText = "Understand the Jungles"
+    subtitle = "Let's get started!"
+    buttonText = "Getting to know my achievements"
 
 
   # Tiles Section
@@ -138,8 +147,8 @@ disqusShortname = ""
   # Section Type Two
   [params.two]
     enable = true
-    title = "Massa libero"
-    subtitle = """Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. 
+    title = "My Role-Model"
+    subtitle = """Why I aspire to be like him. 
     Mauris aliquet magna magna sed nunc rhoncus pharetra. 
     Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
     Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
