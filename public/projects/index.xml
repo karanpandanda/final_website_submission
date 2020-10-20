@@ -8,12 +8,12 @@
     <language>en-us</language>
     <lastBuildDate>Tue, 20 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="/projects/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Covid 19 Update</title>
+      <title>Covid 19 Mortality</title>
       <link>/projects/project2/</link>
       <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>/projects/project2/</guid>
-      <description>Analysis of mortality rates based on several input variables The rampant Covid-19 virus has mankind firmly in its grip. And even though many have gotten used to this state of helplessness in the meantime, that was quite different in the beginning. Especially the months of March and April were characterized by panic and uncertainty. It was said to be a killer virus - a mixture of misinformation and sheer ignorance.</description>
+      <description>Analysis of mortality rates based on several input variables On this page, we are going to look in more detail at the deadliness of Covid-19. We know that the virus has spread across the world over the last few months, sending terror into the minds of billions worldwide. However, is it as deadly as we think it is? Is there evidence to show that people must be extremely worried about this virus.</description>
     </item>
     
   </channel>
