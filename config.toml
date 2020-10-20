@@ -91,8 +91,8 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Karan"
-    subtitle = "Let's get started!"
-    buttonText = "Getting to know my achievements"
+    subtitle = "Enjoy exploring!"
+    buttonText = "Let's get started"
 
 
   # Tiles Section
@@ -103,37 +103,37 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "Covid-19 Mortality"
       subtitle = "Why is everyone so scared?"
-      image = "Covid19.jpg"
+      image = "Covid.jpg"
       url = "projects/project2"
 
     [[params.tiles.showcase]]
       title = "Trump vs Biden"
-      subtitle = "What is the outcome going to be"
-      image = "pic02.jpg"
+      subtitle = "What is the outcome going to be?"
+      image = "Trump.jpg"
       url = "projects/project3"
 
     [[params.tiles.showcase]]
       title = "An Analysis of AirBnBs in Athens"
       subtitle = "Are you planning on going to Athens anytime soon?"
-      image = "pic03.jpg"
+      image = "Athens.jpg"
       url = "projects/project7"
 
     [[params.tiles.showcase]]
       title = "Spielberg vs Burton"
       subtitle = "Who's got the higher ratings?"
-      image = "pic04.jpg"
+      image = "Spielberg.jpg"
       url = "projects/project5"
 
     [[params.tiles.showcase]]
       title = "IBM HR Analytics"
       subtitle = "How do employees feel?"
-      image = "pic05.jpg"
+      image = "IBM.jpg"
       url = "projects/project6"
 
     [[params.tiles.showcase]]
       title = "More about me"
       subtitle = "Curriculum Vitae"
-      image = "pic06.jpg"
+      image = "ID.jpg"
       url = "blogs/blog1"
     # You can make more showcases by copy and pasting the code above
 
@@ -149,10 +149,7 @@ disqusShortname = ""
     enable = true
     title = "My Role-Model"
     subtitle = """Why I aspire to be like him. 
-    Mauris aliquet magna magna sed nunc rhoncus pharetra. 
-    Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
-    Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
-    Mauris aliquet magna magna sed nunc rhoncus amet pharetra et feugiat tempus."""
+    Rahul Dravid, an Indian cricketing legend, is my idol. He has taught me ."""
     buttonText = "Get Started"
     url = "blogs"
 
