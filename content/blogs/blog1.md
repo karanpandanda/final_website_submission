@@ -3,12 +3,14 @@ categories:
 - ""
 - ""
 date: "2017-10-31T21:28:43-05:00"
-description: ""
+description: Curriculum Vitae
 draft: false
-image: pic10.jpg
+image: 
 keywords: ""
-slug: ipsum
-title: Ipsum
+slug: blog1
+title: Curriculum Vitae
 ---
 
-Hello hello how are you, hope everything's alright 
+Hire me!
+
+![Resume](/img/CV.jpg)

@@ -57,7 +57,7 @@ img <- image_scale(image_scale(img,"500%"),("x100%"))
 img
 ```
 
-## A personal forecast of the upcoming US election
+## My forecast of what is coming!
 
 The race is on. Four years after Trump's historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls.
 

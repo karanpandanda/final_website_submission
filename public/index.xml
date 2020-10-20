@@ -32,7 +32,7 @@ In addition, many articles and commentators think that, e.g., Yield curve invers
       <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>/projects/project3/</guid>
-      <description>A personal forecast of the upcoming US election The race is on. Four years after Trump’s historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls.
+      <description>My forecast of what is coming! The race is on. Four years after Trump’s historic election victory, the time has come again this November - the 52 American states will elect a new president. As of today, Biden is far ahead in the polls.
 This may be due to the policies of real estate magnate and incumbent president Trump, but most of all, his recent Covid-19 infection and poor management of health care regulations in the country may have cost him some votes.</description>
     </item>
     
@@ -84,12 +84,12 @@ In addition, we will run a hypothesis test, using use both the t.test command an
     </item>
     
     <item>
-      <title>Ipsum</title>
-      <link>/blogs/ipsum/</link>
+      <title>Curriculum Vitae</title>
+      <link>/blogs/blog1/</link>
       <pubDate>Tue, 31 Oct 2017 21:28:43 -0500</pubDate>
       
-      <guid>/blogs/ipsum/</guid>
-      <description>Hello hello how are you, hope everything&amp;rsquo;s alright</description>
+      <guid>/blogs/blog1/</guid>
+      <description>Hire me!</description>
     </item>
     
     <item>
