@@ -95,13 +95,13 @@ disqusShortname = ""
       title = "Covid-19 update"
       subtitle = "Why is it so scary"
       image = "pic01.jpg"
-      url = "blogs/blog1.md"
+      url = "blogs/blog1"
 
     [[params.tiles.showcase]]
       title = "Purple Skies"
       subtitle = "Beautiful Nights around Jungles"
       image = "pic02.jpg"
-      url = "projects/project1/index.html"
+      url = "project/project1"
 
     [[params.tiles.showcase]]
       title = "Jungles on Fire"
